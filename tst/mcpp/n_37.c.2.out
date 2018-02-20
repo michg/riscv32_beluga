@@ -1,0 +1,13 @@
+./n_37.c:79:20: warning - logical source line is too long
+  012345678901234567"
+                     ^
+./n_37.c: note - ISO C guarantees at most 509 characters
+./n_37.c:95:42: warning - logical source line is too long
+      int D1234567890123456789012 = 123459;
+                                           ^
+./n_37.c: note - ISO C guarantees at most 509 characters
+In file included from ./n_37.c:101:
+m1024.h:1026:9: warning - too many macros simultaneously defined
+  #define ZX 1
+          ^~
+m1024.h: note - ISO C guarantees only 1024 macros

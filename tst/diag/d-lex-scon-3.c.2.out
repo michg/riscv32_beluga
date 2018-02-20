@@ -1,0 +1,6 @@
+./d-lex-scon-3.c:3:11: ERROR - missing `{' for initializer of `incomplete array of int'
+  int a[] = L"abc이것은테스";
+            ^
+./d-lex-scon-3.c:3:11: ERROR - invalid initializer; `pointer to long int' given for `int'
+  int a[] = L"abc이것은테스";
+            ^~~~~~~~~~~~~~~~

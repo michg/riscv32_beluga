@@ -1,0 +1,122 @@
+<command-line>:1:1: warning - missing `=' between object-like macro `M1' and replacement list
+./pp-lex-direc-a.c:2:8: warning - only space and horizontal tab allowed in directives
+  #define FOO foo
+         ^
+./pp-lex-direc-a.c:2:12: warning - only space and horizontal tab allowed in directives
+  #define FOO foo
+             ^
+./pp-lex-direc-a.c:3:8: warning - only space and horizontal tab allowed in directives
+  #define BAR bar bar
+         ^
+./pp-lex-direc-a.c:3:12: warning - only space and horizontal tab allowed in directives
+  #define BAR bar bar
+             ^
+./pp-lex-direc-a.c:3:16: warning - only space and horizontal tab allowed in directives
+  #define BAR bar bar
+                 ^
+./pp-lex-direc-a.c:5:4: warning - stray whitespace character `\f'
+  FOO BAR FOO
+     ^
+./pp-lex-direc-a.c:5:8: warning - stray whitespace character `\v'
+  FOO BAR FOO
+         ^
+./pp-lex-direc-a.c:8:1: warning - stray whitespace character `\f'
+   # include "pp-lex-direc-b.c" 
+  ^
+./pp-lex-direc-a.c:8:3: warning - only space and horizontal tab allowed in directives
+   # include "pp-lex-direc-b.c" 
+    ^
+./pp-lex-direc-a.c:8:30: warning - only space and horizontal tab allowed in directives
+   # include "pp-lex-direc-b.c" 
+                               ^
+In file included from ./pp-lex-direc-a.c:8:
+pp-lex-direc-b.c:1:6: warning - only space and horizontal tab allowed in directives
+  #if 1 +0
+       ^
+pp-lex-direc-b.c:2:6: warning - only space and horizontal tab allowed in directives
+  #line 100
+       ^
+pp-lex-direc-b.c:100:6: warning - only space and horizontal tab allowed in directives
+  #else dummy
+       ^
+pp-lex-direc-b.c:100:7: warning - extraneous tokens ignored
+  #else dummy
+        ^~~~~
+pp-lex-direc-b.c:101:6: warning - only space and horizontal tab allowed in directives
+  #line 200
+       ^
+pp-lex-direc-b.c:102:1: warning - stray whitespace character `\r'
+   # endif
+  ^
+pp-lex-direc-b.c:102:3: warning - only space and horizontal tab allowed in directives
+   # endif
+    ^
+pp-lex-direc-b.c:103:1: warning - stray whitespace character `\v'
+   ordinary line 
+  ^
+pp-lex-direc-b.c:103:10: warning - stray whitespace character `\f'
+   ordinary line 
+           ^
+pp-lex-direc-b.c:103:15: warning - stray whitespace character `\r'
+   ordinary line 
+                ^
+./pp-lex-direc-a.c:9:6: warning - only space and horizontal tab allowed in directives
+  #if 1 +0
+       ^
+./pp-lex-direc-a.c:10:6: warning - only space and horizontal tab allowed in directives
+  #line 100
+       ^
+./pp-lex-direc-a.c:100:1: warning - stray whitespace character `\r'
+   # else dummy
+  ^
+./pp-lex-direc-a.c:100:3: warning - only space and horizontal tab allowed in directives
+   # else dummy
+    ^
+./pp-lex-direc-a.c:100:8: warning - only space and horizontal tab allowed in directives
+   # else dummy
+         ^
+./pp-lex-direc-a.c:100:9: warning - extraneous tokens ignored
+   # else dummy
+          ^~~~~
+./pp-lex-direc-a.c:101:6: warning - only space and horizontal tab allowed in directives
+  #line 200
+       ^
+./pp-lex-direc-a.c:103:1: warning - stray whitespace character `\v'
+   ordinary line 
+  ^
+./pp-lex-direc-a.c:103:10: warning - stray whitespace character `\f'
+   ordinary line 
+           ^
+./pp-lex-direc-a.c:103:15: warning - stray whitespace character `\r'
+   ordinary line 
+                ^
+./pp-lex-direc-a.c:105:9: warning - only space and horizontal tab allowed in directives
+  #define  foo  
+          ^
+./pp-lex-direc-a.c:105:14: warning - only space and horizontal tab allowed in directives
+  #define  foo  
+               ^
+./pp-lex-direc-a.c:106:8: warning - only space and horizontal tab allowed in directives
+  #pragma foo 
+         ^
+./pp-lex-direc-a.c:106:12: warning - only space and horizontal tab allowed in directives
+  #pragma foo 
+             ^
+./pp-lex-direc-a.c:106:2: warning - unknown `#pragma'
+  #pragma foo 
+   ^~~~~~
+./pp-lex-direc-a.c:107:9: warning - only space and horizontal tab allowed in directives
+  #pragma  bar  
+          ^
+./pp-lex-direc-a.c:107:14: warning - only space and horizontal tab allowed in directives
+  #pragma  bar  
+               ^
+./pp-lex-direc-a.c:107:2: warning - unknown `#pragma'
+  #pragma  bar  
+   ^~~~~~
+./pp-lex-direc-a.c:108:1: warning - stray whitespace character `\v'
+   ordinary line
+  ^
+./pp-lex-direc-a.c:105:10: warning - macro `foo' defined but not used
+  #define  foo  
+           ^~~

@@ -1,0 +1,2 @@
+<command-line>:1:1: ERROR - redefinition of macro `FOO'
+<command-line>:1:1: note - previous definition was here

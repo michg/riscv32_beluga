@@ -1,0 +1,12 @@
+./i_35_3.c:10:13: ERROR - excess characters in character constant
+  #if     (L'ab' != L'\x61\x62') || (L'ab' == 'ab')
+              ^
+./i_35_3.c:10:25: ERROR - excess characters in character constant
+  #if     (L'ab' != L'\x61\x62') || (L'ab' == 'ab')
+                          ^~~~
+./i_35_3.c:10:39: ERROR - excess characters in character constant
+  #if     (L'ab' != L'\x61\x62') || (L'ab' == 'ab')
+                                        ^
+./i_35_3.c:10:47: ERROR - excess characters in character constant
+  #if     (L'ab' != L'\x61\x62') || (L'ab' == 'ab')
+                                                ^

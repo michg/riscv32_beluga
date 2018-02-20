@@ -1,0 +1,3 @@
+./d-sym-vtoa.c:5:15: ERROR - lvalue required
+      ((void)1) = 0;
+      ~~~~~~~~~ ^

@@ -1,0 +1,34 @@
+./d-err-skipto-1.c:1:1: warning - C90 does not support //-comments
+  // a b ''
+  ^~
+./d-err-skipto-1.c: note - this is reported only once per file
+./d-err-skipto-1.c:1:8: ERROR - empty character constant is not allowed
+  // a b ''
+         ^~
+./d-err-skipto-1.c:1:1: ERROR - invalid declaration
+  // a b ''
+  ^
+./d-err-skipto-1.c:2:8: ERROR - empty character constant is not allowed
+  // a b ''
+         ^~
+./d-err-skipto-1.c:3:10: ERROR - empty character constant is not allowed
+  // a b c ''
+           ^~
+./d-err-skipto-1.c:5:10: ERROR - invalid token `#' ignored
+  // a b c #
+           ^
+./d-err-skipto-1.c:6:17: ERROR - no digits for exponent
+  // a b c d 3.14ex
+                  ^
+./d-err-skipto-1.c:7:10: ERROR - invalid token `#' ignored
+  // a b c #
+           ^
+./d-err-skipto-1.c:8:10: warning - stray whitespace character `\v'
+  // a b c  
+           ^
+./d-err-skipto-1.c:9:12: warning - stray whitespace character `\v'
+  // a b c d  
+             ^
+./d-err-skipto-1.c:10:12: ERROR - unclosed comment
+  // a b c d /*
+             ^~

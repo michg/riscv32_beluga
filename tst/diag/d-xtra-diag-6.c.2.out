@@ -1,0 +1,11 @@
+./d-xtra-diag-6.c:6:6: ERROR - missing member name
+      };
+       ^
+./d-xtra-diag-6.c: note - no tag must be given if anonymous struct/union intended
+./d-xtra-diag-6.c:7:18: ERROR - missing struct member declaration
+      struct tag2 {};
+                   ^
+./d-xtra-diag-6.c:7:19: ERROR - missing member name
+      struct tag2 {};
+                    ^
+./d-xtra-diag-6.c: note - no tag must be given if anonymous struct/union intended

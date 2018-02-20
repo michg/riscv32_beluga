@@ -1,0 +1,4 @@
+./d-in-nextlined-4.c:8: ERROR - invalid token `테' ignored
+./d-in-nextlined-4.c:8: ERROR - invalid token `스' ignored
+./d-in-nextlined-4.c:8: ERROR - invalid token `트' ignored
+./d-in-nextlined-4.c:8: ERROR - empty declaration

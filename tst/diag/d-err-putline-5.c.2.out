@@ -1,0 +1,9 @@
+./d-err-putline-5.c:3:64: ERROR - invalid escape sequence `\xz' in string literal
+      "abcd生活漢字生活漢字zzz"; char y[] = "abcd生活漢字生活漢字\xzzz"
+                                                                 ^~~
+./d-err-putline-5.c:5:27: ERROR - invalid escape sequence `\xz' in string literal
+      L"abcd生活漢字生活漢字\xzzz";
+                            ^~~
+./d-err-putline-5.c:3:41: ERROR - character array initialized from wide string
+      "abcd生活漢字生活漢字zzz"; char y[] = "abcd生活漢字生活漢字\xzzz"
+                                          ^

@@ -1,0 +1,12 @@
+# 1 "./u_1_7_utf8-3.c"
+ 
+ 
+# 8 "./u_1_7_utf8-3.c"
+main( void)
+{
+    char *  cp = "\"å­—\"";    
+    char *  ecp3 = "\"í €\"";    
+
+    return  0;
+}
+

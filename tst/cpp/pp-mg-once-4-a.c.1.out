@@ -1,0 +1,14 @@
+# 1 "./pp-mg-once-4-a.c"
+
+# 5 "./pp-mg-once-4-a.c"
+PRE
+# 5 "pp-mg-once-4-b.c" 1
+BODY
+
+# 7 "./pp-mg-once-4-a.c" 2
+POST
+
+PRE-AGAIN
+# 11 "./pp-mg-once-4-a.c"
+POST-AGAIN
+

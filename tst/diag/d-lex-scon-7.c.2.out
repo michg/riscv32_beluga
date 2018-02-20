@@ -1,0 +1,30 @@
+./d-lex-scon-7.c:9:12: warning - string literal is too long
+  char b[] = "1234567891123456789212345678931234567894123456789512345678961234567897123456789812345678991234567890"
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./d-lex-scon-7.c: note - ISO C guarantees only 509 characters
+./d-lex-scon-7.c:23:10: ERROR - wide character array initialized from non-wide string
+  long e[] = "老捞伙荤坷腊磨迫备老老捞伙荤坷腊磨迫备捞老捞伙荤坷腊磨迫备伙老捞伙荤坷腊磨迫备荤老捞伙荤坷腊磨迫备坷"
+           ^
+./d-lex-scon-7.c:34:12: warning - string literal is too long
+  long f[] = "老捞伙荤坷腊磨迫备老老捞伙荤坷腊磨迫备捞老捞伙荤坷腊磨迫备伙老捞伙荤坷腊磨迫备荤老捞伙荤坷腊磨迫备坷"
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./d-lex-scon-7.c: note - ISO C guarantees only 509 characters
+./d-lex-scon-7.c:34:10: ERROR - wide character array initialized from non-wide string
+  long f[] = "老捞伙荤坷腊磨迫备老老捞伙荤坷腊磨迫备捞老捞伙荤坷腊磨迫备伙老捞伙荤坷腊磨迫备荤老捞伙荤坷腊磨迫备坷"
+           ^
+./d-lex-scon-7.c:46:12: warning - adjacent multibyte and wide strings result in wide string
+             L"老捞伙荤坷腊磨迫备腊老捞伙荤坷腊磨迫备磨老捞伙荤坷腊磨迫备迫老捞伙荤坷腊磨迫备备老捞伙荤坷腊磨迫备归"
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./d-lex-scon-7.c: note - the concatenation is not portable in C90
+./d-lex-scon-7.c:59:13: warning - adjacent multibyte and wide strings result in wide string
+              "老捞伙荤坷腊磨迫备腊老捞伙荤坷腊磨迫备磨老捞伙荤坷腊磨迫备迫老捞伙荤坷腊磨迫备备老捞伙荤坷腊磨迫备归"
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./d-lex-scon-7.c: note - the concatenation is not portable in C90
+./d-lex-scon-7.c:56:12: warning - string literal is too long
+  long h[] = L"老捞伙荤坷腊磨迫备老老捞伙荤坷腊磨迫备捞老捞伙荤坷腊磨迫备伙老捞伙荤坷腊磨迫备荤老捞伙荤坷腊磨迫备坷"
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./d-lex-scon-7.c: note - ISO C guarantees only 509 characters
+./d-lex-scon-7.c:78:12: warning - string literal is too long
+  char j[] = "12345腊磨迫备老老捞伙荤坷腊磨迫备捞老捞伙荤坷腊磨迫备伙老捞伙荤坷腊磨迫备荤老捞伙荤坷腊磨迫备坷"
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./d-lex-scon-7.c: note - ISO C guarantees only 509 characters

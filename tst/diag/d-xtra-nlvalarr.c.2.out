@@ -1,0 +1,699 @@
+./d-xtra-nlvalarr.c:6:21: warning - signedness of plain bit-field is implementation-defined
+          int x[10], y:10;
+          ~~~         ^
+./d-xtra-nlvalarr.c:12:23: warning - missing prototype from `f'
+      extern struct tag f();
+                        ^~~
+./d-xtra-nlvalarr.c:14:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x;
+      ^~~~~
+./d-xtra-nlvalarr.c:14:5: warning - expression result not used
+      f().x;
+      ^~~~~
+./d-xtra-nlvalarr.c:15:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x[0];
+      ^~~~~
+./d-xtra-nlvalarr.c:15:10: ERROR - pointer required but `array' given
+      f().x[0];
+      ~~~~~^
+./d-xtra-nlvalarr.c:16:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x[1];
+      ^~~~~
+./d-xtra-nlvalarr.c:16:10: ERROR - pointer required but `array' given
+      f().x[1];
+      ~~~~~^
+./d-xtra-nlvalarr.c:17:6: warning - non-lvalue array does not decay to pointer in C90
+      &f().x;
+       ^~~~~
+./d-xtra-nlvalarr.c:17:5: ERROR - lvalue required
+      &f().x;
+      ^~~~~~
+./d-xtra-nlvalarr.c:18:6: warning - non-lvalue array does not decay to pointer in C90
+      &f().x[0];
+       ^~~~~
+./d-xtra-nlvalarr.c:18:11: ERROR - pointer required but `array' given
+      &f().x[0];
+       ~~~~~^
+./d-xtra-nlvalarr.c:19:6: warning - non-lvalue array does not decay to pointer in C90
+      &f().x[1];
+       ^~~~~
+./d-xtra-nlvalarr.c:19:11: ERROR - pointer required but `array' given
+      &f().x[1];
+       ~~~~~^
+./d-xtra-nlvalarr.c:20:12: warning - non-lvalue array does not decay to pointer in C90
+      sizeof(f().x);
+             ^~~~~
+./d-xtra-nlvalarr.c:20:5: warning - expression result not used
+      sizeof(f().x);
+      ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:21:12: warning - non-lvalue array does not decay to pointer in C90
+      sizeof(f().x[0]);
+             ^~~~~
+./d-xtra-nlvalarr.c:21:17: ERROR - pointer required but `array' given
+      sizeof(f().x[0]);
+             ~~~~~^
+./d-xtra-nlvalarr.c:22:12: warning - non-lvalue array does not decay to pointer in C90
+      sizeof(f().x[1]);
+             ^~~~~
+./d-xtra-nlvalarr.c:22:17: ERROR - pointer required but `array' given
+      sizeof(f().x[1]);
+             ~~~~~^
+./d-xtra-nlvalarr.c:23:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x = 0;
+      ^~~~~
+./d-xtra-nlvalarr.c:23:11: ERROR - lvalue required
+      f().x = 0;
+      ~~~~~ ^
+./d-xtra-nlvalarr.c:24:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x[1] = 0;
+      ^~~~~
+./d-xtra-nlvalarr.c:24:10: ERROR - pointer required but `array' given
+      f().x[1] = 0;
+      ~~~~~^
+./d-xtra-nlvalarr.c:25:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x++;
+      ^~~~~
+./d-xtra-nlvalarr.c:25:10: ERROR - lvalue required
+      f().x++;
+      ~~~~~^~
+./d-xtra-nlvalarr.c:26:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x--;
+      ^~~~~
+./d-xtra-nlvalarr.c:26:10: ERROR - lvalue required
+      f().x--;
+      ~~~~~^~
+./d-xtra-nlvalarr.c:27:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x = f().x;
+      ^~~~~
+./d-xtra-nlvalarr.c:27:13: warning - non-lvalue array does not decay to pointer in C90
+      f().x = f().x;
+              ^~~~~
+./d-xtra-nlvalarr.c:27:11: ERROR - lvalue required
+      f().x = f().x;
+      ~~~~~ ^
+./d-xtra-nlvalarr.c:28:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x < 0;
+      ^~~~~
+./d-xtra-nlvalarr.c:28:11: ERROR - operands of < have illegal types `array [10] of int' and `int'
+      f().x < 0;
+      ~~~~~ ^ ~
+./d-xtra-nlvalarr.c:29:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x | 0;
+      ^~~~~
+./d-xtra-nlvalarr.c:29:11: ERROR - operands of | have illegal types `array [10] of int' and `int'
+      f().x | 0;
+      ~~~~~ ^ ~
+./d-xtra-nlvalarr.c:30:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x == 0;
+      ^~~~~
+./d-xtra-nlvalarr.c:30:11: ERROR - operands of == have illegal types `array [10] of int' and `int'
+      f().x == 0;
+      ~~~~~ ^~ ~
+./d-xtra-nlvalarr.c:31:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x % 1;
+      ^~~~~
+./d-xtra-nlvalarr.c:31:11: ERROR - operands of % have illegal types `array [10] of int' and `int'
+      f().x % 1;
+      ~~~~~ ^ ~
+./d-xtra-nlvalarr.c:32:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x+2 - f().x;
+      ^~~~~
+./d-xtra-nlvalarr.c:32:10: ERROR - operands of + have illegal types `array [10] of int' and `int'
+      f().x+2 - f().x;
+      ~~~~~^~
+./d-xtra-nlvalarr.c:32:15: warning - non-lvalue array does not decay to pointer in C90
+      f().x+2 - f().x;
+                ^~~~~
+./d-xtra-nlvalarr.c:33:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x * 10;
+      ^~~~~
+./d-xtra-nlvalarr.c:33:11: ERROR - operands of * have illegal types `array [10] of int' and `int'
+      f().x * 10;
+      ~~~~~ ^ ~~
+./d-xtra-nlvalarr.c:34:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x / 10;
+      ^~~~~
+./d-xtra-nlvalarr.c:34:11: ERROR - operands of / have illegal types `array [10] of int' and `int'
+      f().x / 10;
+      ~~~~~ ^ ~~
+./d-xtra-nlvalarr.c:35:6: warning - non-lvalue array does not decay to pointer in C90
+      +f().x;
+       ^~~~~
+./d-xtra-nlvalarr.c:35:5: ERROR - operand of unary + has illegal type `array [10] of int'
+      +f().x;
+      ^~~~~~
+./d-xtra-nlvalarr.c:36:6: warning - non-lvalue array does not decay to pointer in C90
+      -f().x;
+       ^~~~~
+./d-xtra-nlvalarr.c:36:5: ERROR - operand of unary - has illegal type `array [10] of int'
+      -f().x;
+      ^~~~~~
+./d-xtra-nlvalarr.c:37:6: warning - non-lvalue array does not decay to pointer in C90
+      ~f().x;
+       ^~~~~
+./d-xtra-nlvalarr.c:37:5: ERROR - operand of unary ~ has illegal type `array [10] of int'
+      ~f().x;
+      ^~~~~~
+./d-xtra-nlvalarr.c:38:6: warning - non-lvalue array does not decay to pointer in C90
+      !f().x;
+       ^~~~~
+./d-xtra-nlvalarr.c:38:5: ERROR - operand of unary ! has illegal type `array [10] of int'
+      !f().x;
+      ^~~~~~
+./d-xtra-nlvalarr.c:39:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x();
+      ^~~~~
+./d-xtra-nlvalarr.c:39:5: ERROR - function or function pointer required
+      f().x();
+      ^~~~~
+./d-xtra-nlvalarr.c:40:5: warning - non-lvalue array does not decay to pointer in C90
+      f().x->x;
+      ^~~~~
+./d-xtra-nlvalarr.c:40:10: ERROR - struct or union pointer required but `array' given
+      f().x->x;
+      ~~~~~^~
+./d-xtra-nlvalarr.c:42:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:43:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x[0];
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:44:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x[1];
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:45:7: ERROR - conversion to `struct' is not allowed
+      &((struct tag)1).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:46:7: ERROR - conversion to `struct' is not allowed
+      &((struct tag)1).x[0];
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:47:7: ERROR - conversion to `struct' is not allowed
+      &((struct tag)1).x[1];
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:48:13: ERROR - conversion to `struct' is not allowed
+      sizeof(((struct tag)1).x);
+              ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:49:13: ERROR - conversion to `struct' is not allowed
+      sizeof(((struct tag)1).x[0]);
+              ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:50:13: ERROR - conversion to `struct' is not allowed
+      sizeof(((struct tag)1).x[1]);
+              ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:51:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x = 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:52:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x[1] = 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:53:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x++;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:54:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x--;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:55:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x = ((struct tag)1).x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:55:26: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x = ((struct tag)1).x;
+                           ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:56:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x < 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:57:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x | 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:58:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x == 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:59:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x % 1;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:60:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x+2 - f()((struct tag)1).x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:60:27: ERROR - function or function pointer required
+      ((struct tag)1).x+2 - f()((struct tag)1).x;
+                            ^~~
+./d-xtra-nlvalarr.c:60:31: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x+2 - f()((struct tag)1).x;
+                                ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:61:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x * 10;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:62:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x / 10;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:63:7: ERROR - conversion to `struct' is not allowed
+      +((struct tag)1).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:64:7: ERROR - conversion to `struct' is not allowed
+      -((struct tag)1).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:65:7: ERROR - conversion to `struct' is not allowed
+      ~((struct tag)1).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:66:7: ERROR - conversion to `struct' is not allowed
+      !((struct tag)1).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:67:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x();
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:68:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)1).x->x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:70:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:71:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x[0];
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:72:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x[1];
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:73:7: ERROR - conversion to `struct' is not allowed
+      &((struct tag)i).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:74:7: ERROR - conversion to `struct' is not allowed
+      &((struct tag)i).x[0];
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:75:7: ERROR - conversion to `struct' is not allowed
+      &((struct tag)i).x[1];
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:76:13: ERROR - conversion to `struct' is not allowed
+      sizeof(((struct tag)i).x);
+              ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:77:13: ERROR - conversion to `struct' is not allowed
+      sizeof(((struct tag)i).x[0]);
+              ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:78:13: ERROR - conversion to `struct' is not allowed
+      sizeof(((struct tag)i).x[1]);
+              ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:79:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x = 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:80:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x[1] = 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:81:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x++;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:82:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x--;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:83:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x = ((struct tag)i).x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:83:26: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x = ((struct tag)i).x;
+                           ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:84:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x < 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:85:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x | 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:86:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x == 0;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:87:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x % 1;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:88:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x+2 - ((struct tag)1).x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:88:28: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x+2 - ((struct tag)1).x;
+                             ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:89:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x * 10;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:90:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x / 10;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:91:7: ERROR - conversion to `struct' is not allowed
+      +((struct tag)i).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:92:7: ERROR - conversion to `struct' is not allowed
+      -((struct tag)i).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:93:7: ERROR - conversion to `struct' is not allowed
+      ~((struct tag)i).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:94:7: ERROR - conversion to `struct' is not allowed
+      !((struct tag)i).x;
+        ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:95:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x();
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:96:6: ERROR - conversion to `struct' is not allowed
+      ((struct tag)i).x->x;
+       ^~~~~~~~~~~~~
+./d-xtra-nlvalarr.c:98:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1);
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:99:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)[0];
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:100:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)[1];
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:101:7: ERROR - conversion to `array' is not allowed
+      &((int [10])1);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:102:7: ERROR - conversion to `array' is not allowed
+      &((int [10])1)[0];
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:103:7: ERROR - conversion to `array' is not allowed
+      &((int [10])1)[1];
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:104:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [10])1));
+              ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:105:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [10])1)[0]);
+              ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:106:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [10])1)[1]);
+              ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:107:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) = 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:108:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)[1] = 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:109:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)++;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:110:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)--;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:111:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) = ((int [10])1);
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:111:22: ERROR - conversion to `array' is not allowed
+      ((int [10])1) = ((int [10])1);
+                       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:112:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) < 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:113:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) | 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:114:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) == 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:115:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) % 1;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:116:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)+2 - ((int [10])1);
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:116:24: ERROR - conversion to `array' is not allowed
+      ((int [10])1)+2 - ((int [10])1);
+                         ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:117:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) * 10;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:118:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1) / 10;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:119:7: ERROR - conversion to `array' is not allowed
+      +((int [10])1);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:120:7: ERROR - conversion to `array' is not allowed
+      -((int [10])1);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:121:7: ERROR - conversion to `array' is not allowed
+      ~((int [10])1);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:122:7: ERROR - conversion to `array' is not allowed
+      !((int [10])1);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:123:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)();
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:124:6: ERROR - conversion to `array' is not allowed
+      ((int [10])1)->x;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:126:6: ERROR - conversion to `array' is not allowed
+      ((int [])1);
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:127:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)[0];
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:128:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)[1];
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:129:7: ERROR - conversion to `array' is not allowed
+      &((int [])1);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:130:7: ERROR - conversion to `array' is not allowed
+      &((int [])1)[0];
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:131:7: ERROR - conversion to `array' is not allowed
+      &((int [])1)[1];
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:132:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [])1));
+              ^~~~~~~~~
+./d-xtra-nlvalarr.c:133:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [])1)[0]);
+              ^~~~~~~~~
+./d-xtra-nlvalarr.c:134:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [])1)[1]);
+              ^~~~~~~~~
+./d-xtra-nlvalarr.c:135:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) = 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:136:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)[1] = 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:137:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)++;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:138:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)--;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:139:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) = ((int [])1);
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:139:20: ERROR - conversion to `array' is not allowed
+      ((int [])1) = ((int [])1);
+                     ^~~~~~~~~
+./d-xtra-nlvalarr.c:140:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) < 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:141:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) | 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:142:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) == 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:143:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) % 1;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:144:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)+2 - ((int [])1);
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:144:22: ERROR - conversion to `array' is not allowed
+      ((int [])1)+2 - ((int [])1);
+                       ^~~~~~~~~
+./d-xtra-nlvalarr.c:145:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) * 10;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:146:6: ERROR - conversion to `array' is not allowed
+      ((int [])1) / 10;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:147:7: ERROR - conversion to `array' is not allowed
+      +((int [])1);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:148:7: ERROR - conversion to `array' is not allowed
+      -((int [])1);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:149:7: ERROR - conversion to `array' is not allowed
+      ~((int [])1);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:150:7: ERROR - conversion to `array' is not allowed
+      !((int [])1);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:151:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)();
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:152:6: ERROR - conversion to `array' is not allowed
+      ((int [])1)->x;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:154:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i);
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:155:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)[0];
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:156:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)[1];
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:157:7: ERROR - conversion to `array' is not allowed
+      &((int [10])i);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:158:7: ERROR - conversion to `array' is not allowed
+      &((int [10])i)[0];
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:159:7: ERROR - conversion to `array' is not allowed
+      &((int [10])i)[1];
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:160:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [10])i));
+              ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:161:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [10])i)[0]);
+              ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:162:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [10])i)[1]);
+              ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:163:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) = 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:164:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)[1] = 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:165:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)++;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:166:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)--;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:167:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) = ((int [10])i);
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:167:22: ERROR - conversion to `array' is not allowed
+      ((int [10])i) = ((int [10])i);
+                       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:168:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) < 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:169:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) | 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:170:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) == 0;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:171:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) % 1;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:172:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)+2 - ((int [10])i);
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:172:24: ERROR - conversion to `array' is not allowed
+      ((int [10])i)+2 - ((int [10])i);
+                         ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:173:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) * 10;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:174:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i) / 10;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:175:7: ERROR - conversion to `array' is not allowed
+      +((int [10])i);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:176:7: ERROR - conversion to `array' is not allowed
+      -((int [10])i);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:177:7: ERROR - conversion to `array' is not allowed
+      ~((int [10])i);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:178:7: ERROR - conversion to `array' is not allowed
+      !((int [10])i);
+        ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:179:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)();
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:180:6: ERROR - conversion to `array' is not allowed
+      ((int [10])i)->x;
+       ^~~~~~~~~~~
+./d-xtra-nlvalarr.c:182:6: ERROR - conversion to `array' is not allowed
+      ((int [])i);
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:183:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)[0];
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:184:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)[1];
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:185:7: ERROR - conversion to `array' is not allowed
+      &((int [])i);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:186:7: ERROR - conversion to `array' is not allowed
+      &((int [])i)[0];
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:187:7: ERROR - conversion to `array' is not allowed
+      &((int [])i)[1];
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:188:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [])i));
+              ^~~~~~~~~
+./d-xtra-nlvalarr.c:189:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [])i)[0]);
+              ^~~~~~~~~
+./d-xtra-nlvalarr.c:190:13: ERROR - conversion to `array' is not allowed
+      sizeof(((int [])i)[1]);
+              ^~~~~~~~~
+./d-xtra-nlvalarr.c:191:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) = 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:192:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)[1] = 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:193:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)++;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:194:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)--;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:195:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) = ((int [])i);
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:195:20: ERROR - conversion to `array' is not allowed
+      ((int [])i) = ((int [])i);
+                     ^~~~~~~~~
+./d-xtra-nlvalarr.c:196:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) < 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:197:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) | 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:198:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) == 0;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:199:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) % 1;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:200:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)+2 - ((int [])i);
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:200:22: ERROR - conversion to `array' is not allowed
+      ((int [])i)+2 - ((int [])i);
+                       ^~~~~~~~~
+./d-xtra-nlvalarr.c:201:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) * 10;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:202:6: ERROR - conversion to `array' is not allowed
+      ((int [])i) / 10;
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:203:7: ERROR - conversion to `array' is not allowed
+      +((int [])i);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:204:7: ERROR - conversion to `array' is not allowed
+      -((int [])i);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:205:7: ERROR - conversion to `array' is not allowed
+      ~((int [])i);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:206:7: ERROR - conversion to `array' is not allowed
+      !((int [])i);
+        ^~~~~~~~~
+./d-xtra-nlvalarr.c:207:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)();
+       ^~~~~~~~~
+./d-xtra-nlvalarr.c:208:6: ERROR - conversion to `array' is not allowed
+      ((int [])i)->x;
+       ^~~~~~~~~

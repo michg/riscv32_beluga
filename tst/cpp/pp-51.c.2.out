@@ -1,0 +1,102 @@
+./pp-51.c:8:9: warning - parenthesize subexpression for clarification
+  #if 0 | 0 == 0    /* no paren */
+          ^~~~~~
+./pp-51.c:10:9: warning - parenthesize subexpression for clarification
+  #if 1 & 1 != 1    /* no paren */
+          ^~~~~~
+./pp-51.c:12:9: warning - parenthesize subexpression for clarification
+  #if 1 ^ 0 < 0     /* no paren */
+          ^~~~~
+./pp-51.c:14:9: warning - parenthesize subexpression for clarification
+  #if 0 | 0 > 0     /* no paren */
+          ^~~~~
+./pp-51.c:16:9: warning - parenthesize subexpression for clarification
+  #if 1 & 1 <= 1    /* no paren */
+          ^~~~~~
+./pp-51.c:18:9: warning - parenthesize subexpression for clarification
+  #if 1 ^ 0 >= 0    /* no paren */
+          ^~~~~~
+./pp-51.c:21:5: warning - parenthesize subexpression for clarification
+  #if 0 < 0 | 0     /* no paren */
+      ^~~~~
+./pp-51.c:23:5: warning - parenthesize subexpression for clarification
+  #if 1 > 1 & 1     /* no paren */
+      ^~~~~
+./pp-51.c:25:5: warning - parenthesize subexpression for clarification
+  #if 0 >= 1 ^ 0    /* no paren */
+      ^~~~~~
+./pp-51.c:27:5: warning - parenthesize subexpression for clarification
+  #if 0 != 0 | 0    /* no paren */
+      ^~~~~~
+./pp-51.c:29:5: warning - parenthesize subexpression for clarification
+  #if 1 == 1 & 1    /* no paren */
+      ^~~~~~
+./pp-51.c:31:5: warning - parenthesize subexpression for clarification
+  #if 0 <= 1 ^ 0    /* no paren */
+      ^~~~~~
+./pp-51.c:34:9: warning - parenthesize subexpression for clarification
+  #if 0 | 0 == 1 & 1     /* no paren */
+          ^~~~~~
+./pp-51.c:36:9: warning - parenthesize subexpression for clarification
+  #if 1 ^ 0 == 1 | 1     /* no paren */
+          ^~~~~~
+./pp-51.c:38:5: warning - parenthesize subexpression for clarification
+  #if 0 == 0 & 1 == 1    /* no paren x 2 */
+      ^~~~~~
+./pp-51.c:38:14: warning - parenthesize subexpression for clarification
+  #if 0 == 0 & 1 == 1    /* no paren x 2 */
+               ^~~~~~
+./pp-51.c:40:5: warning - parenthesize subexpression for clarification
+  #if 1 > 1 ^ 0 < 0      /* no paren x 2 */
+      ^~~~~
+./pp-51.c:40:13: warning - parenthesize subexpression for clarification
+  #if 1 > 1 ^ 0 < 0      /* no paren x 2 */
+              ^~~~~
+./pp-51.c:47:5: warning - parenthesize subexpression for clarification
+  #if (0 | 0) == 1 & 1    /* no paren */
+      ^~~~~~~~~~~~
+./pp-51.c:49:9: warning - parenthesize subexpression for clarification
+  #if 0 | 0 == (1 & 1)    /* no paren */
+          ^~~~~~~~~~~~
+./pp-51.c:60:9: warning - parenthesize subexpression for clarification
+  #if 1 & 1 == 0 && 0 | 0 == 1 || 0 == 1 ^ 1    /* no paren x 4 */
+          ^~~~~~
+./pp-51.c:60:23: warning - parenthesize subexpression for clarification
+  #if 1 & 1 == 0 && 0 | 0 == 1 || 0 == 1 ^ 1    /* no paren x 4 */
+                        ^~~~~~
+./pp-51.c:60:5: warning - parenthesize subexpression for clarification
+  #if 1 & 1 == 0 && 0 | 0 == 1 || 0 == 1 ^ 1    /* no paren x 4 */
+      ^~~~~~~~~~~~~~~~~~~~~~~~
+./pp-51.c:60:33: warning - parenthesize subexpression for clarification
+  #if 1 & 1 == 0 && 0 | 0 == 1 || 0 == 1 ^ 1    /* no paren x 4 */
+                                  ^~~~~~
+./pp-51.c:67:5: warning - parenthesize subexpression for clarification
+  #if BIT < 0     /* no paren */
+      ^~~~~~~
+./pp-51.c:69:5: warning - parenthesize subexpression for clarification
+  #if 0 == BIT    /* no paren */
+      ^~~~~~~~
+./pp-51.c:64:13: warning - parenthesize subexpression for clarification
+  #define CMP 0 < 1
+              ^~~~~
+./pp-51.c:71:9: note - expanded from here
+  #if 1 & CMP     /* no paren */
+          ^~~
+./pp-51.c:64:13: warning - parenthesize subexpression for clarification
+  #define CMP 0 < 1
+              ^~~~~
+./pp-51.c:73:5: note - expanded from here
+  #if CMP ^ 1     /* no paren */
+      ^~~
+./pp-51.c:65:18: warning - parenthesize subexpression for clarification
+  #define EXPR 1 & 1 < 0
+                   ^~~~~
+./pp-51.c:75:5: note - expanded from here
+  #if EXPR        /* no paren */
+      ^~~~
+./pp-51.c:65:18: warning - parenthesize subexpression for clarification
+  #define EXPR 1 & 1 < 0
+                   ^~~~~
+./pp-51.c:85:6: note - expanded from here
+  #if (EXPR)    /* no paren */
+       ^~~~

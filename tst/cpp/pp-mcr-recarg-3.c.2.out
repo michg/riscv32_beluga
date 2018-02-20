@@ -1,0 +1,102 @@
+./pp-mcr-recarg-3.c:4:19: warning - too many parameters
+               p31, p32, p33)
+                    ^~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 parameters
+./pp-mcr-recarg-3.c:8:11: warning - too many arguments to macro `FOO1'
+       a31, a32)    /* warning, insufficient */
+            ^~~
+./pp-mcr-recarg-3.c:5:1: note - expanded from here
+  FOO1(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 arguments
+./pp-mcr-recarg-3.c:8:14: ERROR - insufficient number of arguments to macro `FOO1'
+       a31, a32)    /* warning, insufficient */
+               ^
+./pp-mcr-recarg-3.c:5:1: note - expanded from here
+  FOO1(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c:1:9: note - see this definition
+  #define FOO1(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, \
+          ^~~~
+./pp-mcr-recarg-3.c:22:19: warning - too many parameters
+               p31, p32, p33)
+                    ^~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 parameters
+./pp-mcr-recarg-3.c:26:11: warning - too many arguments to macro `FOO3'
+       a31, a32, a33)    /* warning */
+            ^~~
+./pp-mcr-recarg-3.c:23:1: note - expanded from here
+  FOO3(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 arguments
+./pp-mcr-recarg-3.c:31:19: warning - too many parameters
+               p31, p32)
+                    ^~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 parameters
+./pp-mcr-recarg-3.c:35:11: warning - too many arguments to macro `FOO4'
+       a31, a32)    /* warning */
+            ^~~
+./pp-mcr-recarg-3.c:32:1: note - expanded from here
+  FOO4(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 arguments
+./pp-mcr-recarg-3.c:40:19: warning - too many parameters
+               p31, p32)
+                    ^~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 parameters
+./pp-mcr-recarg-3.c:44:11: warning - too many arguments to macro `FOO5'
+       a31, a32, a33)    /* warning, error */
+            ^~~
+./pp-mcr-recarg-3.c:41:1: note - expanded from here
+  FOO5(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 arguments
+./pp-mcr-recarg-3.c:44:16: ERROR - too many arguments to macro `FOO5'
+       a31, a32, a33)    /* warning, error */
+                 ^~~
+./pp-mcr-recarg-3.c:41:1: note - expanded from here
+  FOO5(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c:37:9: note - see this definition
+  #define FOO5(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, \
+          ^~~~
+./pp-mcr-recarg-3.c:52:6: ERROR - too many arguments to macro `FOO6'
+       a31, a32)    /* error */
+       ^~~
+./pp-mcr-recarg-3.c:49:1: note - expanded from here
+  FOO6(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c:46:9: note - see this definition
+  #define FOO6(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, \
+          ^~~~
+./pp-mcr-recarg-3.c:61:11: ERROR - too many arguments to macro `FOO7'
+       a31, a32)    /* error */
+            ^~~
+./pp-mcr-recarg-3.c:58:1: note - expanded from here
+  FOO7(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+  ^~~~
+./pp-mcr-recarg-3.c:54:9: note - see this definition
+  #define FOO7(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, \
+          ^~~~
+./pp-mcr-recarg-3.c:66:28: warning - too many arguments to macro `FOO5'
+                        a31, a32, a33)    /* warning, error */
+                             ^~~
+./pp-mcr-recarg-3.c:63:16: note - expanded from here
+  #define MCR(x) FOO##x(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+                 ^~~~~~
+./pp-mcr-recarg-3.c:67:11: note - expanded from here
+  /* ... */ MCR(5)
+            ^~~~~~
+./pp-mcr-recarg-3.c: note - ISO C guarantees only 31 arguments
+./pp-mcr-recarg-3.c:66:33: ERROR - too many arguments to macro `FOO5'
+                        a31, a32, a33)    /* warning, error */
+                                  ^~~
+./pp-mcr-recarg-3.c:63:16: note - expanded from here
+  #define MCR(x) FOO##x(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, \
+                 ^~~~~~
+./pp-mcr-recarg-3.c:67:11: note - expanded from here
+  /* ... */ MCR(5)
+            ^~~~~~
+./pp-mcr-recarg-3.c:37:9: note - see this definition
+  #define FOO5(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, \
+          ^~~~

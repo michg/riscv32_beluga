@@ -1,0 +1,12 @@
+./pp-expr-expr-3.c:22:10: ERROR - invalid preprocessing expression
+  #if 0? 1,: 1
+           ^
+./pp-expr-expr-3.c:28:13: ERROR - `)' expected before `end of line'
+  #if 1? 0: (1,
+              ^
+./pp-expr-expr-3.c:28:11: note - to match this `('
+  #if 1? 0: (1,
+            ^
+./pp-expr-expr-3.c:31:14: ERROR - invalid preprocessing expression
+  #if 1? 0: (1,)
+               ^

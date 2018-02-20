@@ -1,0 +1,33 @@
+# 1 "./pp-mg-once-6-a.c"
+# 3 "pp-mg-once-6-b.c" 1
+BODY1
+# 8 "pp-mg-once-6-b.c"
+BODY2
+# 2 "./pp-mg-once-6-a.c" 2
+# 10 "pp-mg-once-6-b.c" 1
+# 5 "./pp-mg-once-6-a.c" 2
+# 3 "pp-mg-once-6-b.c" 1
+BODY1
+# 6 "./pp-mg-once-6-a.c" 2
+# 10 "pp-mg-once-6-b.c" 1
+# 10 "./pp-mg-once-6-a.c" 2
+# 4 "pp-mg-once-6-c.c" 1
+BODY
+# 11 "./pp-mg-once-6-a.c" 2
+# 9 "pp-mg-once-6-c.c" 1
+# 15 "./pp-mg-once-6-a.c" 2
+# 6 "pp-mg-once-6-d.c" 1
+BODY
+# 16 "./pp-mg-once-6-a.c" 2
+# 9 "pp-mg-once-6-d.c" 1
+# 20 "./pp-mg-once-6-a.c" 2
+# 4 "pp-mg-once-6-e.c" 1
+BODY1
+# 7 "pp-mg-once-6-e.c"
+BODY2
+
+# 21 "./pp-mg-once-6-a.c" 2
+# 7 "pp-mg-once-6-e.c" 1
+BODY2
+
+# 23 "./pp-mg-once-6-a.c" 2

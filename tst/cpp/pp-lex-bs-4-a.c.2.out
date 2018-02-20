@@ -1,0 +1,48 @@
+./pp-lex-bs-4-a.c:3:10: ERROR - invalid escape sequence `\o' in file name
+  #line 1 "\o"
+           ^~
+o:2:9: ERROR - missing closing "
+  #line 2 "\"
+          ^~~
+:3:13: ERROR - invalid escape sequence `\@' in file name
+  #line 3 "foo\@"
+              ^~
+foo\":5:13: ERROR - invalid escape sequence in file name
+  #line 5 "bar\한"
+              ^~~
+bar한:6:13: ERROR - invalid escape sequence in file name
+  #line 6 "bar\x글"
+              ^~
+ba:7:12: ERROR - invalid escape sequence `\8' in file name
+  #line 7 "\7\8"
+             ^~
+8:8:13: ERROR - invalid escape sequence `\xz' in file name
+  #line 8 "\xf\xz"
+              ^~~
+:9:14: ERROR - invalid escape sequence `\x"' in file name
+  #line 9 "\xFF\x"
+               ^~~
+:12:13: ERROR - missing closing "
+  #define bar "\@\"
+              ^~~~~
+:11:13: ERROR - invalid escape sequence `\xz' in file name
+  #define foo "\xf\xz"
+              ^~~~~~~~
+:13:11: note - expanded from here
+  #line 100 foo
+            ^~~
+:12:13: ERROR - invalid escape sequence `\@' in file name
+  #define bar "\@\"
+              ^~~~~
+:100:11: note - expanded from here
+  #line 101 bar
+            ^~~
+:11:13: ERROR - invalid escape sequence `\xz' in file name
+  #define foo "\xf\xz"
+              ^~~~~~~~
+@:101:11: note - expanded from here
+  #line 102 f\
+            ^~
+:103:10: ERROR - cannot open #include file `pp-lex-bs-1-\@.c'
+  #include "pp-lex-bs-1-\@.c"
+           ^~~~~~~~~~~~~~~~~~

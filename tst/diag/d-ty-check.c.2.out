@@ -1,0 +1,56 @@
+./d-ty-check.c:6:6: ERROR - missing member name
+      };
+       ^
+./d-ty-check.c: note - no tag must be given if anonymous struct/union intended
+./d-ty-check.c:18:7: ERROR - duplicate member name `a'
+      } a;
+        ^
+./d-ty-check.c:7:9: note - previous declaration was here
+      int a;    /* ambiguous */
+          ^
+./d-ty-check.c:7:9: ERROR - ambiguous member `a'
+      int a;    /* ambiguous */
+          ^
+./d-ty-check.c:5:13: note - see member declaration in `struct t'
+          int a;    /* ambiguous */
+              ^
+./d-ty-check.c:9:13: ERROR - ambiguous member `a'
+          int a;    /* ambiguous */
+              ^
+./d-ty-check.c:5:13: note - see member declaration in `struct t'
+          int a;    /* ambiguous */
+              ^
+./d-ty-check.c:16:16: ERROR - ambiguous member `a'
+             int a;    /* ambiguous */
+                 ^
+./d-ty-check.c:13:16: note - see member declaration in `struct defined at ./d-ty-check.c:11:12'
+             int a;    /* ambiguous */
+                 ^
+./d-ty-check.c:24:6: ERROR - missing member name
+      };
+       ^
+./d-ty-check.c: note - no tag must be given if anonymous struct/union intended
+./d-ty-check.c:26:13: ERROR - ambiguous member `a'
+          int a;    /* ambiguous */
+              ^
+./d-ty-check.c:23:13: note - see member declaration in `struct u'
+          int a;    /* ambiguous */
+              ^
+./d-ty-check.c:42:5: warning - expression result not used
+      a.a;
+      ^~~
+./d-ty-check.c:43:5: warning - expression result not used
+      b.a;
+      ^~~
+./d-ty-check.c:44:5: warning - expression result not used
+      c.a;
+      ^~~
+./d-ty-check.c:45:5: warning - expression result not used
+      (&c)->a;
+      ^~~~~~~
+./d-ty-check.c:46:5: warning - expression result not used
+      c.b;
+      ^~~
+./d-ty-check.c:47:5: warning - expression result not used
+      (&c)->b;
+      ^~~~~~~
