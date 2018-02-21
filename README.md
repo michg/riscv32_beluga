@@ -1,5 +1,12 @@
 #### https://github.com/mycoboco/beluga compiler with a riscv32-backend and changes for cygwin.
 
+The riscv-testcases are located in the riscvtst folder. To run the tests iverilog (https://github.com/steveicarus/iverilog) 
+and python3 and the following steps are needed:
+1. create the compiler and the binutils from root directory: "make"
+2. in the riscvtst folder create the simulation model: "./buildsim.sh"
+3. in the riscvtst folder run either on testcase:   "./run.sh sort"
+or all testcases (located in riscvtst/src):  "./runall.sh"
+The results will be placed in riscvtst/result. 
 
 beluga: a standard C compiler
 =============================
