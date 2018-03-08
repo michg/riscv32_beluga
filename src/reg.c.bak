@@ -858,7 +858,7 @@ static void addload(dag_node_t *p, int n, sym_t *r)
     assert(r);
 
     q = p->kid[n];
-    // assert(q->count == 1);
+    assert(q->count == 1);
     q = dag_newnode(OP_LOAD+op_tyscode(q->op), q, NULL, q->sym[0]);
     q->count = 1;
     if (r->u.t.cse == p->kid[n])

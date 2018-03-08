@@ -1,5 +1,5 @@
 /*
- *  machine description for lcc's x86-test binding
+ *  machine description for riscv32
  */
 
 
@@ -63,12 +63,14 @@ rr(P(reg),   OP_INDIRP4 _ OP_1 _ P(addr),  1,  NULL,  "lw %R, %0\n")
 /* CVII */
 rr(P(reg),  OP_CVII14 _ OP_1 _ P(reg),  2,  NULL,  "slli %R, %0, 8*3\nsrai %R, %R, 8*3\n")
 rr(P(reg),  OP_CVII24 _ OP_1 _ P(reg),  2,  NULL,  "slli %R, %0, 8*2\nsrai %R, %R, 8*2\n")
-//rr(P(reg),  OP_CVII41 _ OP_1 _ P(reg),  0,  gen_notarget,  "%0")
+rr(P(reg),  OP_CVII41 _ OP_1 _ P(reg),  0,  gen_notarget,  "%0")
 rr(P(reg),  OP_CVII41 _ OP_1 _ P(reg),  0,  gen_move,  "mv %R, %0\n")
-//rr(P(reg),  OP_CVII42 _ OP_1 _ P(reg),  0,  gen_notarget,  "%0")
+rr(P(reg),  OP_CVII42 _ OP_1 _ P(reg),  0,  gen_notarget,  "%0")
 rr(P(reg),  OP_CVII42 _ OP_1 _ P(reg),  0,  gen_move,  "mv %R, %0\n")
 
 /* CVIU */
+rr(P(reg),  OP_CVIU14 _ OP_1 _ P(reg),  2,  NULL,  "slli %R, %0, 8*3\nsrli %R, %R, 8*3\n")
+rr(P(reg),  OP_CVIU24 _ OP_1 _ P(reg),  2,  NULL,  "slli %R, %0, 8*2\nsrli %R, %R, 8*2\n")
 rr(P(reg),  OP_CVIU44 _ OP_1 _ P(reg),  0,  gen_notarget,  "%0")
 rr(P(reg),  OP_CVIU44 _ OP_1 _ P(reg),  0,  gen_move,      "mv %R,%0\n")
 

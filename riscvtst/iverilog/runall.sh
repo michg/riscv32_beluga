@@ -1,5 +1,5 @@
-BINUTILSDIR=../riscvbin/bin
-BUILDDIR=../build
+BINUTILSDIR=../../riscvbin/bin
+BUILDDIR=../../build
 
 rm -f -r result
 mkdir result

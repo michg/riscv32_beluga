@@ -379,13 +379,13 @@ static void initconst(int op, sym_val_t v)
         case OP_I:
             switch(op_size(op)) {
                 case 1:
-                    fprintf(out, ".byte 0x%s\n", xtsd(v.s));
+                    fprintf(out, ".byte %s\n", xtsd(v.s));
                     break;
                 case 2:
-                    fprintf(out, ".half 0x%s\n", xtsd(v.s));
+                    fprintf(out, ".half %s\n", xtsd(v.s));
                     break;
                 case 4:
-                    fprintf(out, ".word 0x%s\n", xtsd(v.s));
+                    fprintf(out, ".word %s\n", xtsd(v.s));
                     break;
                 default:
                     assert(!"invalid scode -- should never reach here");
@@ -394,11 +394,11 @@ static void initconst(int op, sym_val_t v)
             break;
         case OP_U:
             assert(op_size(op) == 4);
-            fprintf(out, ".word 0x%s\n", xtux(v.u));
+            fprintf(out, ".word 0%sH\n", xtux(v.u));
             break;
         case OP_P:
             assert(op_size(op) == 4);
-            fprintf(out, ".word 0x%s\n", xtux(v.p));
+            fprintf(out, ".word 0%sH\n", xtux(v.p));
             break;
         case OP_F:
             {
@@ -462,7 +462,8 @@ static void initspace(ssz_t n)
 {
     assert(n > 0);
 
-    fprintf(out, ".space %"FMTSZ"d\n", n);
+    if (init_curseg() != INIT_SEGBSS)
+        fprintf(out, ".byte %"FMTSZ"d\n", n);
 }
 
 
@@ -548,7 +549,6 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
     }
 
     assert(f->x.name);
-	fputs(".align 4\n", out);
     fprintf(out, "%s:\n", f->x.name);
     
     gen_off = 0;
@@ -561,12 +561,11 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
         gen_off += ROUNDUP(q->type->size, 4);
 		r = argreg(i);      
 		if(r!=NULL && !p->f.structarg && !p->f.addressed && !ty_variadic(f->type) && (f->u.f.ncall==0) ) { 
-			p->sclass = q->sclass = LEX_REGISTER;			
+			p->sclass = q->sclass = LEX_REGISTER;
 			reg_askvar(p, r);
 			assert(p->x.regnode && p->x.regnode->vbl == p);	
 			q->type = p->type;
-			q->x = p->x;
-			
+			q->x = p->x;			
 		} else {
 			if(reg_askvar(p, intregw) && r!=NULL) {
 				p->sclass = q->sclass = LEX_REGISTER;
@@ -585,14 +584,11 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
 	gen_aoff = gen_maxaoff = 0;	
     dag_gencode(caller, callee);
 	
-	if (f->u.f.ncall!=0 && gen_maxaoff < 24) gen_maxaoff = 24;
-    gen_maxaoff = ROUNDUP(gen_maxaoff, 4);
 	sizeisave = 4 * bitcount(reg_umask[REG_SINT]); 	
-    gen_frame = ROUNDUP(gen_maxoff + gen_maxaoff + sizeisave + 8, 16);
-    	
-	if (gen_frame > 0)
+    gen_frame = ROUNDUP(gen_maxoff + gen_maxaoff + sizeisave + 8, 4);
+    if (gen_frame > 0)
         fprintf(out, "addi x2, x2, -%"FMTSZ"d\n", gen_frame);
-	saved =  gen_maxaoff;
+	saved =  gen_maxoff;
 	for (i = 0; i < 32; i++) {
     if (*reg_umask[REG_SINT] & *reg_vmask[REG_SINT] & 1<<i) {
 		fprintf(out, "sw x%d, %d(x2)\n", i, saved);
@@ -617,7 +613,7 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
 		
 	dag_emitcode();
 	
-	saved =  gen_maxaoff;
+	saved =  gen_maxoff;
 	for (i = 0; i < 32; i++) {
 		if (*reg_umask[REG_SINT] & *reg_vmask[REG_SINT] & 1<<i) {
 			fprintf(out, "lw x%d, %d(x2)\n", i, saved);
@@ -641,10 +637,24 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
 static void segment(int seg)
 {
     int c = init_curseg();
-    
-    if(seg==c) return;
+
+    /* close */
+    switch(c) {
+        case 0:
+            break;
+        case INIT_SEGCODE:
+            //fputs("_TEXT ends\n", out);
+            break;
+        case INIT_SEGBSS:
+        case INIT_SEGDATA:
+        case INIT_SEGLIT:
+            //fputs("_DATA ends\n", out);
+            break;
+        default:
+            assert(!"invalid segment -- should never reach here");
+            break;
+    }
     /* open */
-	fputs(".align 4\n", out);
     switch(seg) {
         case 0:
             break;
@@ -652,8 +662,6 @@ static void segment(int seg)
             fputs(".text\n", out);
             break;
         case INIT_SEGBSS:
-		    fputs(".bss\n", out);
-			break;
         case INIT_SEGDATA:
         case INIT_SEGLIT:
             fputs(".data\n", out);

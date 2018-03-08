@@ -1,5 +1,5 @@
-BINUTILSDIR=../riscvbin/bin
-BUILDDIR=../build
+BINUTILSDIR=../../riscvbin/bin
+BUILDDIR=../../build
 SRCDIR=./src/$1
 RESDIR=./result/$1
 
