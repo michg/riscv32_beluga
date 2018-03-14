@@ -821,6 +821,7 @@ void (dag_emitcode)(void)
                 break;
             case STMT_DEFPOINT:
                 clx_cpos = cp->u.point.pos;
+				if(main_opt()->glevel && ir_cur->stabline) ir_cur->stabline(clx_cpos);
                 break;
             case STMT_GEN:
             case STMT_JUMP:

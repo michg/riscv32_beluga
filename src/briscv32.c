@@ -853,6 +853,21 @@ static void emit(dag_node_t *p)
     }
 }
 
+static void stabline(const lmap_t *cp) {            
+	static int curfileno = 1;
+	static char *curfile = 0;
+	const lmap_t *f; 
+	cp = lmap_mstrip(cp); 
+	f = lmap_nfrom(cp);
+	if(curfile!=f->u.i.f) {
+		fprintf(out, ".file %d \"%s\"\n",curfileno, f->u.i.f);	
+		curfileno++;
+		curfile = f->u.i.f;
+	}
+	fprintf(out, ".loc 1 %d\n", cp->u.n.py + f->u.i.yoff);	
+}
+ 
+
 
 /* IR interface for null binding */
 ir_t ir_riscv32 = {
@@ -897,6 +912,7 @@ ir_t ir_riscv32 = {
     gen_emit,
     gen_code,
     segment,
+	stabline,
     {
         '%',                  /* fmt */
         MAX,                  /* nreg */

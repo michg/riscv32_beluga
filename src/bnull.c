@@ -322,6 +322,7 @@ ir_t ir_bnull = {
     NULL,         /* emit */
     gen_code,
     segment,
+	NULL,
     {
         0,       /* fmt */
         0,       /* nreg */

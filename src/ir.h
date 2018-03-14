@@ -10,6 +10,7 @@
 #include "dag.h"
 #include "gen.h"
 #include "sym.h"
+#include "lmap.h"
 
 
 /* IR interface */
@@ -61,7 +62,7 @@ typedef struct ir_t {
     void (*emit)(dag_node_t *);                            /* emits code */
     dag_node_t *(*gen)(dag_node_t *);                      /* anotates dag */
     void (*segment)(int);                                  /* changes segment */
-
+    void (*stabline) (const lmap_t *); 						   /* line stabdebug */
     cfg_ir_t x;    /* extension for back-end */
 } ir_t;
 

@@ -935,6 +935,7 @@ ir_t ir_bx86l = {
     gen_emit,
     gen_code,
     segment,
+	NULL,
     {
         '%',                  /* fmt */
         MAX,                  /* nreg */
