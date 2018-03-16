@@ -62,7 +62,9 @@ typedef struct ir_t {
     void (*emit)(dag_node_t *);                            /* emits code */
     dag_node_t *(*gen)(dag_node_t *);                      /* anotates dag */
     void (*segment)(int);                                  /* changes segment */
-    void (*stabline) (const lmap_t *); 						   /* line stabdebug */
+    void (*stabline) (const lmap_t *); 		         	   /* line stabdebug */
+	void (*stabtype) (sym_t *,void *); 		         	   /* type stabtype */
+	void (*stabsym) (sym_t *); 		         	           /* type stabtype */
     cfg_ir_t x;    /* extension for back-end */
 } ir_t;
 

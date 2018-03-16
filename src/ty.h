@@ -67,6 +67,10 @@ struct ty_t {
             const lmap_t *pos;       /* locus for prototype */
         } f;                         /* function */
     } u;
+    struct {
+	    unsigned printed:1;
+		unsigned short typeno;   
+    } x;
 };
 
 

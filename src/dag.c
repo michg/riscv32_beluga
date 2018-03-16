@@ -27,6 +27,7 @@
 #include "ty.h"
 #include "dag.h"
 
+static void typestab(sym_t *, void *); 
 
 /* visits kids for undagging */
 #define VISITKID() do {                                    \
@@ -757,7 +758,15 @@ void (dag_gencode)(void *caller[], void *callee[])    /* sym_t */
             }
         stmt_list->next = cp;
         cp->prev = stmt_list;
-    }
+    
+		if(main_opt()->glevel && ir_cur->stabsym) {
+			for (i = 0; (p = callee[i]) != NULL && (q = caller[i]) != NULL; i++) {
+				ir_cur->stabsym(p);
+				if (p->sclass != q->sclass || p->type->t.type != q->type->t.type) 
+					ir_cur->stabsym(q);       
+			}
+		}
+	}
     for (cp = stmt_head.next; err_count() == 0 && cp; cp = cp->next)
         switch(cp->kind) {
             case STMT_ADDRESS:
@@ -766,7 +775,7 @@ void (dag_gencode)(void *caller[], void *callee[])    /* sym_t */
             case STMT_BLOCKBEG:
                 {
                     void **p;    /* sym_t */
-                    ir_cur->blockbeg(&cp->u.block.x);
+                    ir_cur->blockbeg(&cp->u.block.x);					
                     for (p = cp->u.block.local; *p; p++)
                         if (S(*p)->ref != 0.0 || main_opt()->glevel)
                             ir_cur->symlocal(S(*p));
@@ -815,13 +824,23 @@ void (dag_emitcode)(void)
         switch(cp->kind) {
             case STMT_ADDRESS:
                 break;
-            case STMT_BLOCKBEG:
-                break;
-            case STMT_BLOCKEND:
+            case STMT_BLOCKBEG: {
+				void **p;    /* sym_t */
+                ir_cur->blockbeg(&cp->u.block.x);					
+                for (p = cp->u.block.local; *p; p++)
+                    if (main_opt()->glevel && ir_cur->stabsym)
+                        ir_cur->stabsym(S(*p)); 
+				}
+				break;
+            case STMT_BLOCKEND: if (main_opt()->glevel && ir_cur->stabtype){
+				stmt_t *bp = cp->u.begin;
+				 sym_foreach(bp->u.block.ident, bp->u.block.scope, ir_cur->stabtype, NULL);
+			     sym_foreach(bp->u.block.type, bp->u.block.scope, ir_cur->stabtype, NULL);
+				}
                 break;
             case STMT_DEFPOINT:
                 clx_cpos = cp->u.point.pos;
-				if(main_opt()->glevel && ir_cur->stabline) ir_cur->stabline(clx_cpos);
+				if (main_opt()->glevel && ir_cur->stabline) ir_cur->stabline(clx_cpos);
                 break;
             case STMT_GEN:
             case STMT_JUMP:

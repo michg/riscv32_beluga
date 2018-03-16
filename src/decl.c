@@ -1496,6 +1496,7 @@ static void doglobal(sym_t *p, void *cl)
         if (p->type->size > 0) {
             decl_defglobal(p, INIT_SEGBSS);
             ir_cur->initspace(p->type->size);
+			if(main_opt()->glevel && ir_cur->stabsym) ir_cur->stabsym(p);
         } else if (p->sclass != LEX_STATIC)    /* static incomplete checked in dclglobal() */
             err_dpos(p->pos, ERR_PARSE_INCOMPTYPE, p, " an identifier");
         p->f.defined = 1;
@@ -1913,6 +1914,7 @@ static void funcdefn(int sclass, const char *id, ty_t *ty, node_t param[],    /*
             S(callee[i])->sclass = LEX_AUTO;
     if (decl_cfunc->sclass != LEX_STATIC)
         ir_cur->export(decl_cfunc);
+	if (main_opt()->glevel && ir_cur->stabsym) ir_cur->stabsym(decl_cfunc); 
     init_swtoseg(INIT_SEGCODE);
     ir_cur->function(decl_cfunc, caller, callee, decl_cfunc->u.f.ncall);
     sym_foreach(stmt_lab, SYM_SLABEL, checklab, NULL);

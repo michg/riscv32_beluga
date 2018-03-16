@@ -39,6 +39,8 @@
 #include "util.h"
 #include "main.h"
 #include "../version.h"
+#include "../src/sym.h"
+
 
 #define PRGNAME  "beluga"
 #define AUTHOR   "Jun Woong"
@@ -1144,6 +1146,10 @@ int main(int argc, char *argv[])
             ir_cur->progbeg(outfile);
             decl_program();
             decl_finalize();
+			if(main_opt()->glevel && ir_cur->stabtype) {
+				sym_foreach(sym_ident, SYM_SGLOBAL, ir_cur->stabtype, NULL);
+				sym_foreach(sym_type, SYM_SGLOBAL, ir_cur->stabtype, NULL); 
+			}
             ir_cur->progend();
         }
         if (err_chkwarn(ERR_PP_UNUSEDMCR))

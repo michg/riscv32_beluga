@@ -30,6 +30,13 @@
 #define paste(p, n)  p ## n
 
 #define MAX 32
+#define	N_LSYM	0x80		/* local sym: name,,0,type,offset */ 
+#define	N_RSYM	0x40		/* register sym: name,,0,type,register */ 
+#define	N_FUN	0x24		/* procedure: name,,0,linenumber,address */ 
+#define	N_GSYM	0x20		/* global symbol: name,,0,type,0 */ 
+#define	N_PSYM	0xa0		/* parameter: name,,0,type,offset */ 
+#define	N_LCSYM	0x28		/* .lcomm symbol: name,,0,type,address */ 
+#define	N_STSYM	0x26		/* static symbol: name,,0,type,address */ 
 
 /* non-terminals;
    ASSUMPTION: int is at least 32-bit wide on the host (see op.h) */
@@ -46,8 +53,9 @@ enum {
 static int fprog;         /* true when progbeg() invoked */
 static int finit;         /* true when init() invoked */
 static FILE *out;         /* output file */
+static FILE *curfile;
 static int endian = 1;    /* for LITTLE from common.h */
-
+static int ntypes; 
 
 static cgr_t rule[
 #define tt(t)
@@ -866,8 +874,163 @@ static void stabline(const lmap_t *cp) {
 	}
 	fprintf(out, ".loc 1 %d\n", cp->u.n.py + f->u.i.yoff);	
 }
- 
 
+/* emittype - emit ty's type number, emitting its definition if necessary. */
+static void emittype(ty_t *ty) {
+	int tc = ty->x.typeno;
+
+	if (TY_ISCONST(ty) || TY_ISVOLATILE(ty)) {
+		emittype(ty->type);
+		ty->x.typeno = ty->type->x.typeno;
+		ty->x.printed = 1;
+		return;
+	}
+	if (tc == 0) {
+		ty->x.typeno = tc = ++ntypes;
+	}
+	fprintf(out, "%d", tc);
+	if (ty->x.printed)
+		return;
+	ty->x.printed = 1;
+	switch (ty->op) {
+	case TY_VOID:	/* void is defined as itself */
+		fprintf(out, "=%d", tc);
+		break;
+	case TY_INT:		
+		fprintf(out, "=r1;%D;%D;", ty->u.sym->u.lim.min, ty->u.sym->u.lim.max);		
+		break;
+	case TY_UNSIGNED:		
+		fprintf(out, "=r1;0;%U;", ty->u.sym->u.lim.max);		
+		break;
+	case TY_FLOAT:	/* float, double, long double get sizes, not ranges */
+		fprintf(out, "=r1;%d;0;", ty->size);
+		break;
+	case TY_POINTER:
+		fputs("=*", out);
+		emittype(ty->type);
+		break;
+	case TY_FUNCTION:
+		fputs("=f", out);
+		emittype(ty->type);
+		break;
+	case TY_ARRAY:	/* array includes subscript as an int range */
+		fputs("=a", out);
+        emittype(ty->type);
+		fprintf(out,";0;%d;", ty->size/ty->type->size - 1);        
+		break;
+	case TY_STRUCT: case TY_UNION: {
+        unsigned tmp;
+        sym_field_t *p, *q = ty->u.sym->u.s.flist;
+		fprintf(out, "=%c%d", ty->op == TY_STRUCT ? 's' : 'u', ty->size);
+        fputs(";", out);
+        for (p=q; p; p = p->link) {
+			if (p->name)
+				fprintf(out, "%s:", p->name);
+			else
+				fputs(":", out);
+            tmp = p->type->x.printed;
+            p->type->x.printed = 1;
+            emittype(p->type);
+            p->type->x.printed = tmp;                        
+            if (p->lsb)
+				fprintf(out, ",%d;", 8*p->offset + SYM_FLDRIGHT(p));				
+			else fprintf(out, ",%d;", 8*p->offset);
+		}
+        break;
+		}		
+	case TY_ENUM: {
+		alist_t *p = (alist_t *)ty->u.sym->u.idlist, *r;		
+		size_t n;
+		fputs("=e", out);
+		ALIST_FOREACH(n, r, p) {
+			fprintf(out,"%s:%d,", ((sym_t *)r->data)->name, ((sym_t *)r->data)->u.value);			
+		}
+		fputs(";", out);
+		break;
+		}
+	//default:
+		//assert(0);
+	}
+	return;
+} 
+
+
+
+/* dbxout - output .stabs entry for type ty */
+static void dbxout(ty_t* ty) {
+	if (!ty->x.printed) {		
+		fputs(".stabs \"", out);
+		if (ty->u.sym && !(TY_ISFUNC(ty) || TY_ISARRAY(ty) || TY_ISPTR(ty)))
+			fprintf(out, "%s", ty->u.sym->name);
+		fprintf(out, ":%c", TY_ISSTRUCT(ty) || TY_ISENUM(ty) ? 'T' : 't');
+		emittype(ty);
+		fprintf(out, "\",%d,0,0,0\n", N_LSYM);
+	}
+} 
+
+/* dbxtype - emit a stabs entry for type ty, return type code */  
+static int dbxtype(ty_t* ty) {
+	dbxout(ty);
+	return ty->x.typeno;
+}
+
+
+/* stabsym - output a stab entry for symbol p */
+void stabsym(sym_t* p) {
+	int code, tc, sz = p->type->size;
+
+	if (p->f.computed)
+		return;
+	if (TY_ISFUNC(p->type)) {
+		fprintf(out, ".stabs \"%s:%c%d\",%d,0,0,%s\n", p->name,
+			p->sclass == LEX_STATIC ? 'f' : 'F', dbxtype(ty_freturn(p->type)),
+			N_FUN, p->x.name);
+		return;
+	}
+	if (p->scope == SYM_SPARAM && p->f.structarg) {
+		assert(TY_ISPTR(p->type) && TY_ISSTRUCT(p->type->type));
+		tc = dbxtype(p->type->type);
+		sz = p->type->type->size;
+	} else
+		tc = dbxtype(p->type); 
+	if (p->sclass == LEX_AUTO && p->scope == SYM_SGLOBAL || p->sclass == LEX_EXTERN) {
+		fprintf(out, ".stabs \"%s:G", p->name);
+		code = N_GSYM;
+	} else if (p->sclass == LEX_STATIC) {
+		fprintf(out, ".stabs \"%s:%c%d\",%d,0,0,%s\n", p->name, p->scope == SYM_SGLOBAL ? 'S' : 'V',
+			tc, p->u.seg == INIT_SEGBSS ? N_LCSYM : N_STSYM, p->x.name);
+		return;
+	} else if (p->sclass == LEX_REGISTER) {
+		if (p->x.regnode) {
+			int r = p->x.regnode->num;
+			if (p->x.regnode->set == REG_SFP)
+				r += 32;	/* floating point */
+				fprintf(out, ".stabs \"%s:%c%d\",%d,0,", p->name,
+					p->scope == SYM_SPARAM ? 'P' : 'r', tc, N_RSYM);
+			fprintf(out, "%d,%d\n", sz, r);
+		}
+		return;
+	} else if (p->scope == SYM_SPARAM) {
+		fprintf(out, ".stabs \"%s:p", p->name);
+		code = N_PSYM;
+	} else if (p->scope >= SYM_SLOCAL) {
+		fprintf(out, ".stabs \"%s:", p->name);
+		code = N_LSYM;
+	} else
+		assert(0);
+	fprintf(out, "%d\",%d,0,0,%s\n", tc, code,
+		p->scope >= SYM_SPARAM && p->sclass != LEX_EXTERN ? p->x.name : "0");
+}
+
+static void stabtype(sym_t *s, void *cl) {
+	 //if(!TY_ISFUNC(s->type)) fprintf(out, "; function type:%s,sclass:%d\n", s->name,s->sclass);
+	 // 	else fprintf(out, "; type:%s,sclass:%d\n", s->name,s->sclass);
+	 if(s->sclass == LEX_TYPEDEF) {
+		fprintf(out, ".stabs \"%s:=d%d\",%d,0,0,0\n", s->name, dbxtype(s->type), N_LSYM);
+		return;
+	 }
+	 if(s->sclass==0) dbxtype(s->type);
+ }
 
 /* IR interface for null binding */
 ir_t ir_riscv32 = {
@@ -913,6 +1076,8 @@ ir_t ir_riscv32 = {
     gen_code,
     segment,
 	stabline,
+	stabtype,
+	stabsym,
     {
         '%',                  /* fmt */
         MAX,                  /* nreg */

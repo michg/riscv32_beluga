@@ -908,7 +908,9 @@ ir_t ir_bx86t = {
     gen_emit,
     gen_code,
     segment,
-	NULL,
+	NULL,					  /* stabline */
+	NULL,					  /* stabtype */
+	NULL, 					  /* stabsym  */
     {
         '%',                  /* fmt */
         MAX,                  /* nreg */
