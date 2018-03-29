@@ -1227,6 +1227,7 @@ static sym_t *dclglobal(int sclass, const char *id, ty_t *ty, const lmap_t *posa
     } else {
         clx_tc = clx_next();
         initglobal(p, clx_ppos, 0);
+		if(main_opt()->glevel && ir_cur->stabsym) ir_cur->stabsym(p);
     }
 
     return p;

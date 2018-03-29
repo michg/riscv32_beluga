@@ -56,6 +56,8 @@ static FILE *out;         /* output file */
 static FILE *curfile;
 static int endian = 1;    /* for LITTLE from common.h */
 static int ntypes; 
+static ty_t *missing[16];
+static int indmissing; 
 
 static cgr_t rule[
 #define tt(t)
@@ -878,7 +880,7 @@ static void stabline(const lmap_t *cp) {
 /* emittype - emit ty's type number, emitting its definition if necessary. */
 static void emittype(ty_t *ty) {
 	int tc = ty->x.typeno;
-
+    unsigned tmp;
 	if (TY_ISCONST(ty) || TY_ISVOLATILE(ty)) {
 		emittype(ty->type);
 		ty->x.typeno = ty->type->x.typeno;
@@ -894,20 +896,28 @@ static void emittype(ty_t *ty) {
 	ty->x.printed = 1;
 	switch (ty->op) {
 	case TY_VOID:	/* void is defined as itself */
-		fprintf(out, "=%d", tc);
+		fprintf(out, "=r1");
 		break;
-	case TY_INT:		
+	case TY_INT:
 		fprintf(out, "=r1;%D;%D;", ty->u.sym->u.lim.min, ty->u.sym->u.lim.max);		
 		break;
 	case TY_UNSIGNED:		
 		fprintf(out, "=r1;0;%U;", ty->u.sym->u.lim.max);		
 		break;
+	case TY_DOUBLE:
+	case TY_LDOUBLE:
 	case TY_FLOAT:	/* float, double, long double get sizes, not ranges */
 		fprintf(out, "=r1;%d;0;", ty->size);
 		break;
-	case TY_POINTER:
+	case TY_POINTER:    
 		fputs("=*", out);
+        tmp = ty->type->x.printed;
+        if(!tmp) {                    
+            ty->type->x.printed = 1;
+            missing[++indmissing] = ty->type;
+        }
 		emittype(ty->type);
+        ty->type->x.printed = tmp; 
 		break;
 	case TY_FUNCTION:
 		fputs("=f", out);
@@ -915,7 +925,13 @@ static void emittype(ty_t *ty) {
 		break;
 	case TY_ARRAY:	/* array includes subscript as an int range */
 		fputs("=a", out);
+        tmp = ty->type->x.printed;
+        if(!tmp) {                    
+            ty->type->x.printed = 1;
+            missing[++indmissing] = ty->type;
+        }		
         emittype(ty->type);
+        ty->type->x.printed = tmp; 
 		fprintf(out,";0;%d;", ty->size/ty->type->size - 1);        
 		break;
 	case TY_STRUCT: case TY_UNION: {
@@ -925,11 +941,14 @@ static void emittype(ty_t *ty) {
         fputs(";", out);
         for (p=q; p; p = p->link) {
 			if (p->name)
-				fprintf(out, "%s:", p->name);
+				fprintf(out, "%s,", p->name);
 			else
-				fputs(":", out);
+				fputs(",", out);
             tmp = p->type->x.printed;
-            p->type->x.printed = 1;
+            if(!tmp) {                    
+                p->type->x.printed = 1;
+                missing[++indmissing] = p->type;
+            }             
             emittype(p->type);
             p->type->x.printed = tmp;                        
             if (p->lsb)
@@ -948,8 +967,8 @@ static void emittype(ty_t *ty) {
 		fputs(";", out);
 		break;
 		}
-	//default:
-		//assert(0);
+	default:
+		fprintf(out, "=r1;0;0;");
 	}
 	return;
 } 
@@ -970,7 +989,9 @@ static void dbxout(ty_t* ty) {
 
 /* dbxtype - emit a stabs entry for type ty, return type code */  
 static int dbxtype(ty_t* ty) {
-	dbxout(ty);
+	indmissing = 0; 
+    dbxout(ty);
+    while(indmissing) dbxout(missing[indmissing--]); 
 	return ty->x.typeno;
 }
 
