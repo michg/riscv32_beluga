@@ -115,10 +115,10 @@ rr(P(stmt),  OP_RETI4 _ OP_1 _ P(reg),  0,  NULL,  "# ret\n")
 
 /* ADDR */
 rr(P(lab),   OP_ADDRGP4,  0,  NULL,  "%a")
-rr(P(addr),   OP_ADDRFP4,  0,  NULL,  "%a(x8)")
-rr(P(addr),   OP_ADDRLP4,  0,  NULL,  "%a(x8)")
-rr(P(reg),   OP_ADDRFP4,  1,  NULL,  "addi %R, x8, %a\n")
-rr(P(reg),   OP_ADDRLP4,  1,  NULL,  "addi %R, x8, %a\n")
+rr(P(addr),   OP_ADDRFP4,  0,  NULL,  "%a+%F(x8)")
+rr(P(addr),   OP_ADDRLP4,  0,  NULL,  "%a+%F(x8)")
+rr(P(reg),   OP_ADDRFP4,  1,  NULL,  "addi %R, x8, %a+%F\n")
+rr(P(reg),   OP_ADDRLP4,  1,  NULL,  "addi %R, x8, %a+%F\n")
 
 
 /* ADD */
