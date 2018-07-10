@@ -586,10 +586,7 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
 		
     }
     assert(!caller[i]);
-     
-	fputs("sw x1, -4(x2)\n", out);
-	fputs("sw x8, -8(x2)\n", out);
-    
+        
 	gen_off = gen_maxoff = 8;
 	gen_aoff = gen_maxaoff = 0;	
     dag_gencode(caller, callee);
@@ -600,9 +597,14 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
     gen_frame = ROUNDUP(gen_maxoff, 16);	
     gen_frame_abs = gen_frame + ROUNDUP(gen_maxaoff + sizeisave, 16);
 	
-    fprintf(out, "addi x8, x2, -%"FMTSZ"d\n", gen_frame); 	
+    
 	if (gen_frame_abs > 0)
         fprintf(out, "addi x2, x2, -%"FMTSZ"d\n", gen_frame_abs);
+    
+    fprintf(out,"sw x1, %"FMTSZ"d(x2)\n", gen_frame_abs - 4);
+	fprintf(out, "sw x8, %"FMTSZ"d(x2)\n", gen_frame_abs - 8);
+    fprintf(out, "addi x8, x2, %"FMTSZ"d\n", gen_frame_abs - gen_frame); 	
+    
 	saved =  gen_maxaoff;
 	for (i = 0; i < 32; i++) {
     if (*reg_umask[REG_SINT] & *reg_vmask[REG_SINT] & 1<<i) {
@@ -634,10 +636,10 @@ static void function(sym_t *f, void *caller[], void *callee[], int n)    /* sym_
 			fprintf(out, "lw x%d, %d(x2)\n", i, saved);
 			saved += 4;
 		} 
-	}    
-	fprintf(out, "addi x2, x2, %"FMTSZ"d\n", gen_frame_abs);
-	fputs("lw x8, -8(x2)\n", out);
-	fputs("lw x1, -4(x2)\n", out);
+	}    	
+	fprintf(out, "lw x8, %"FMTSZ"d(x2)\n", gen_frame_abs - 8);
+	fprintf(out, "lw x1, %"FMTSZ"d(x2)\n", gen_frame_abs - 4);
+    fprintf(out, "addi x2, x2, %"FMTSZ"d\n", gen_frame_abs);
     fputs("jalr x0, x1, 0\n", out);
     for(i=0;r=argreg(i);i++) {
 		if(r->x.regnode) r->x.regnode->vbl = NULL;		
