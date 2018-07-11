@@ -1042,8 +1042,8 @@ void stabsym(sym_t* p) {
 		code = N_LSYM;
 	} else
 		assert(0);
-	fprintf(out, "%d\",%d,0,0,%s\n", tc, code,
-		p->scope >= SYM_SPARAM && p->sclass != LEX_EXTERN ? p->x.name : "0");
+	fprintf(out, "%d\",%d,0,0,%d\n", tc, code,
+		p->scope >= SYM_SPARAM && p->sclass != LEX_EXTERN ? (gen_frame + p->x.offset) : 0);
 }
 
 static void stabtype(sym_t *s, void *cl) {
