@@ -14,7 +14,6 @@ all:
 		done
 
 install:
-		mkdir bin
 		for i in $(DIRS) ; do \
 		  $(MAKE) -C $$i install ; \
 		done
@@ -24,4 +23,3 @@ clean:
 		  $(MAKE) -C $$i clean ; \
 		done
 		rm -f *~
-		rm -r -f bin

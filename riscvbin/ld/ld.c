@@ -9,14 +9,22 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <libgen.h>
 
 #include "../include/a.out.h"
+#include "../include/ar.h"
+#include "../include/ranlib.h"
+
+#include "set.h"
+#include "atom.h"
+#include "mem.h"
 
 
 /**************************************************************/
 
 
-#define MAX_STRLEN	200
+#define MAX_STRLEN	400
 
 #define PAGE_SHIFT	12
 #define PAGE_SIZE	(1 << PAGE_SHIFT)
@@ -47,8 +55,11 @@ char dataName[L_tmpnam];
 char debName[L_tmpnam];
 
 char *outName = NULL;
+char *libName = NULL;
 char *mapName = NULL;
 char *inName = NULL;
+char outpath[40];
+char destfile[40];
 
 FILE *codeFile = NULL;
 FILE *dataFile = NULL;
@@ -62,6 +73,7 @@ int segStartDefined[4] = { 0, 0, 0, 0 };
 unsigned int segStart[4] = { 0, 0, 0, 0 };
 char *segName[4] = { "ABS", "CODE", "DATA", "BSS" };
 char *methodName[6] = { "W32", "R12", "RL12", "RH20", "RS12", "J20" };
+unsigned int *rvcadr;
 
 
 typedef struct reloc {
@@ -81,6 +93,7 @@ typedef struct reloc {
 
 typedef struct symbol {
   char *name;			/* name of symbol */
+  char *filename;
   int type;			/* if MSB = 0: the symbol's segment */
 				/* if MSB = 1: the symbol is undefined */
   int value;			/* if symbol defined: the symbol's value */
@@ -92,11 +105,49 @@ typedef struct symbol {
 } Symbol;
 
 typedef struct lelem {
-  unsigned int val;
+  void *valptr;
+  int (*cmp)(const void *x, const void *y); 
   struct lelem *next;
 } Lelem;
 
+typedef struct {
+  unsigned int name;	/* name of symbol (as offset into string space) */
+  long position;	/* position of member which defines the symbol */
+			/* (as file offset to the member's ArHeader) */
+} Entry;
+ArHeader arhdr;
+
 void updatesymbols(void);
+
+int cmpstring(const void *x, const void *y) {
+	return strcmp((char *)x, (char *)y);
+}
+ 
+int cmpint(const void *x, const void *y) {
+	if (*(int *)x < *(int *)y)
+		return -1;
+	else if (*(int *)x > *(int *)y)
+		return +1;
+	else
+		return 0;
+}
+
+int cmpint2(const void *x, const void *y) {
+	if (**(int **)x < **(int **)y)
+		return -1;
+	else if (**(int **)x > **(int **)y)
+		return +1;
+	else
+		return 0;
+}
+
+int intcmp(const void *x, const void *y) {
+	return cmpint2(&x, &y);
+} 
+
+unsigned inthash(const void *x) {
+	return *(int *)x;
+} 
 
 int signext32(int n, unsigned int val)
 {
@@ -113,9 +164,6 @@ int insrange(int bits, int val) {
 int rvcreg(int reg) {
  return((reg>=8 && reg<=15)? 1 : 0);
 }
-
-/**************************************************************/
-
 
 void error(char *fmt, ...) {
   va_list ap;
@@ -164,6 +212,44 @@ void error(char *fmt, ...) {
   exit(1);
 }
 
+/**************************************************************/
+FILE *inFile;
+ExecHeader inHeader; 
+
+#define CODE_START(h)	(sizeof(ExecHeader))
+#define DATA_START(h)	(CODE_START(h) + (h).csize)
+#define CRELOC_START(h)	(DATA_START(h) + (h).dsize)
+#define DRELOC_START(h)	(CRELOC_START(h) + (h).crsize)
+#define SYMTBL_START(h)	(DRELOC_START(h) + (h).drsize)
+#define STRING_START(h)	(SYMTBL_START(h) + (h).symsize)
+
+ 
+
+void dumpString(unsigned int offset) {
+  long pos;
+  int c;
+
+  pos = ftell(inFile);
+  if (fseek(inFile, STRING_START(inHeader) + offset, SEEK_SET) < 0) {
+    error("cannot seek to string");
+  }
+  while (1) {
+    c = fgetc(inFile);
+    if (c == EOF) {
+      error("unexpected end of file");
+    }
+    if (c == 0) {
+      break;
+    }
+    fputc(c, stdout);
+  }
+  fseek(inFile, pos, SEEK_SET);
+}
+
+ 
+ 
+
+
 
 void *allocateMemory(unsigned int size) {
   void *p;
@@ -187,6 +273,11 @@ void freeMemory(void *p) {
 Reloc *relocs = NULL;
 Lelem *clist = NULL;
 Lelem *dlist = NULL;
+Set_T undefset;
+Set_T defset;
+Set_T rvcset;
+void **rvcarray;
+
 
 void addReloc(int segment, RelocRecord *relRec, Symbol **symMap) {
   Reloc *rel;
@@ -241,7 +332,6 @@ void linkSymbol(Reloc *rel) {
 
 void linkSymbols(void) {
   Reloc *rel;
-
   rel = relocs;
   while (rel != NULL) {
     linkSymbol(rel);
@@ -249,52 +339,29 @@ void linkSymbols(void) {
   }
 }
 
-Lelem *newLelem(int val) {
+Lelem *newLelem(int cmp(const void *x, const void *y)) {
   Lelem *p;
   p = allocateMemory(sizeof(Lelem));
   p->next = NULL;
-  p->val = val;
+  p->valptr = NULL;
+  p->cmp = cmp;
   return p;
 }
 
 
-int insertlist(int number) {
- Lelem *p, *q, *r;
- int pos;
- p = clist;
- q = NULL;
- pos = 1;
- while((p!=NULL) && (number>p->val)) {
-  q = p;
-  p = p->next;
-  pos++;
-  }
- r = newLelem(number);
- r->next = p;
- if(q!=NULL) q->next = r; else clist=r;
- return(pos);
+void foreachLelem(Lelem *list, void op(Lelem *x)) {
+    Lelem *p = list;
+    while(p!=NULL) {
+        op(p);
+        p = p->next;
+    }
 }
 
-int getpos(int number) {
- Lelem *p;
- int pos=1;
- p=clist;
- while((p!=NULL) && (number!=p->val)) {
-  p = p->next;
-  pos++;
-  }
-  if(p==NULL) return(-1); else return(pos);
-}
 
-int getmaxpos(int number) {
- Lelem *p;
- int pos=1;
- p=clist;
- while((p!=NULL) && (number>p->val)) {
-  p = p->next;
-  pos++;
-  }
-  return(pos-1);
+int getmaxpos2(int number) {
+ int i=0;
+ while((i<Set_length(rvcset)) && (number > *(unsigned int*)rvcarray[i])) i++;
+ return(i);
 }
 
 void fixupRef(Reloc *rel, int scan) {
@@ -307,19 +374,20 @@ void fixupRef(Reloc *rel, int scan) {
   int rvcmatch=0;
   int rvcdelta=0;
   int deltadst=0,deltaofs=0;
+  
 
   if(scan==0){
     if(rel->segment==SEGMENT_CODE) {
     switch (rel->method) {
-      case METHOD_RL12: case METHOD_RS12: deltaofs = 2*getmaxpos(rel->offset-4);break;
-      default: deltaofs = 2*getmaxpos(rel->offset);
+      case METHOD_RL12: case METHOD_RS12: deltaofs = 2*getmaxpos2(rel->offset-4);break;
+      default: deltaofs = 2*getmaxpos2(rel->offset);
       }
     }
     else deltaofs = 0;
     if(rel->base.segment==SEGMENT_CODE)
-      deltadst = 2*getmaxpos(rel->value);
+      deltadst = 2*getmaxpos2(rel->value);
     else
-      deltadst=2*getmaxpos(segStart[SEGMENT_DATA])&~(SEGALIGN-1);
+      deltadst=2*getmaxpos2(segStart[SEGMENT_DATA])&~(SEGALIGN-1);
     rvcdelta = deltadst-deltaofs;
    }
 
@@ -485,7 +553,9 @@ void fixupRef(Reloc *rel, int scan) {
       break;
   }
   if(rvcmatch && scan==1) {
-   insertlist((rel->offset)+2);
+   NEW(rvcadr);   
+   *rvcadr = (rel->offset)+2;
+   Set_put(rvcset, rvcadr);		
   }
   /* output debugging info */
   if (debugFixup) {
@@ -520,6 +590,14 @@ void relocateSegments(void) {
     fixupRef(rel, 1);
     rel = rel->next;
   }
+  //rvclist = List_reverse(rvclist);
+  //rvcarray = List_toArray(rvclist, NULL);  
+    rvcarray = Set_toArray(rvcset, NULL);
+  //printf("Len:%d\n",Set_length(rvcset));
+   //for(i=0;i<Set_length(rvcset);i++) printf("BS: %d\r\n", *(unsigned int*)rvcarray[i]);
+    qsort(rvcarray, Set_length(rvcset), sizeof (*rvcarray),  cmpint2); 
+   //for(i=0;i<Set_length(rvcset);i++) printf("AS: %d\r\n", *(unsigned int*)rvcarray[i]);
+  
   updatesymbols();
   while (relocs != NULL) {
     rel = relocs;
@@ -534,14 +612,19 @@ void relocateSegments(void) {
 
 
 Symbol *symbolTable = NULL;
+Symbol *libsymbolTable = NULL;
 
 
-Symbol *newSymbol(char *name, int debug) {
+Symbol *newSymbol(char *name, char* filename, int debug) {
   Symbol *p;
 
   p = allocateMemory(sizeof(Symbol));
   p->name = allocateMemory(strlen(name) + 1);
   strcpy(p->name, name);
+  if(filename) {
+    p->filename = allocateMemory(strlen(filename) + 1);
+    strcpy(p->filename, filename);
+  } else p->filename = NULL;
   p->type = MSB;
   p->value = 0;
   p->left = NULL;
@@ -552,14 +635,14 @@ Symbol *newSymbol(char *name, int debug) {
 }
 
 
-Symbol *lookupEnter(char *name, int debug) {
+Symbol *lookupEnter(Symbol **table, char *name, char* filename, int debug) {
   Symbol *p, *q, *r;
   int cmp;
 
-  p = symbolTable;
+  p = *table;
   if (p == NULL) {
-    r = newSymbol(name, debug);
-    symbolTable = r;
+    r = newSymbol(name, filename, debug);
+    *table = r;
     return r;
   }
   while (1) {
@@ -574,7 +657,7 @@ Symbol *lookupEnter(char *name, int debug) {
       p = q->right;
     }
     if (p == NULL) {
-      r = newSymbol(name, debug);
+      r = newSymbol(name, filename, debug);
       if (cmp < 0) {
         q->left = r;
       } else {
@@ -585,7 +668,28 @@ Symbol *lookupEnter(char *name, int debug) {
   }
 }
 
+Symbol *lookup(Symbol *table, char *name) {
+  Symbol *p, *q;
+  int cmp;
 
+  p = table;
+  
+  while (1) {
+    q = p;
+    cmp = strcmp(name, q->name);
+    if (cmp == 0) {
+      return q;
+    }
+    if (cmp < 0) {
+      p = q->left;
+    } else {
+      p = q->right;
+    }
+    if (p == NULL) {      
+      return(NULL);
+    }
+  }
+}
 
 
 void walkTree(Symbol *s, void (*fp)(Symbol *sp)) {
@@ -603,19 +707,13 @@ void walkSymbols(void (*fp)(Symbol *sym)) {
 }
 
 
-
 /**************************************************************/
 
 
-#define CODE_START(h)	(sizeof(ExecHeader))
-#define DATA_START(h)	(CODE_START(h) + (h).csize)
-#define CRELOC_START(h)	(DATA_START(h) + (h).dsize)
-#define DRELOC_START(h)	(CRELOC_START(h) + (h).crsize)
-#define SYMTBL_START(h)	(DRELOC_START(h) + (h).drsize)
-#define STRING_START(h)	(SYMTBL_START(h) + (h).symsize)
 
 
-ExecHeader inHeader;
+
+//ExecHeader inHeader;
 Symbol **symMap;
 
 
@@ -738,21 +836,23 @@ void readSymbols(void) {
       error("cannot read symbol table");
     }
     readString(symRec.name, strBuf, MAX_STRLEN);
-    sym = lookupEnter(strBuf, symRec.debug);
+    sym = lookupEnter(&symbolTable, strBuf, NULL, symRec.debug);
     if ((symRec.type & MSB) == 0) {
       /* the symbol is defined in this symbol record */
       if ((sym->type & MSB) == 0) {
         /* the symbol was already defined in the table */
-        error("symbol '%s' multiply defined", sym->name);
+        printf("symbol '%s' multiply defined!\n\r", sym->name);
       } else {
         /* the symbol was not yet defined in the table, so define it now */
         /* the segment is copied directly from the file */
         /* the value is the sum of the value given in the file */
         /* and this module's segment start of the symbol's segment */
         sym->type = symRec.type;
-        sym->value = symRec.value + segPtr[symRec.type];
+        sym->value = symRec.value + segPtr[symRec.type];        
+		Set_put(defset, Atom_string(strBuf));		
       }
-    } else {
+    } else {            
+	  Set_put(undefset, Atom_string(strBuf));	  
       /* the symbol is undefined in this symbol record */
       /* nothing to do here: lookupEnter already entered */
       /* the symbol into the symbol table, if necessary */
@@ -766,7 +866,7 @@ void readSymbols(void) {
 
 void readModule(void) {
   /* read the file header to determine the sizes */
-  readHeader();
+  readHeader();  
   /* read and transfer the code and data segments */
   readCode();
   readData();
@@ -828,12 +928,21 @@ void printToMapFile(void) {
           segStart[SEGMENT_BSS], segPtr[SEGMENT_BSS]);
 }
 
+void printliststring(Lelem* x) {
+    printf("%s\r\n",(char *) x->valptr);
+}
+
 void printdebSymbol(Symbol *s) {
+  Symbol *refsym;
+  char *refname, *tmp;  
   switch (s->debug) {
     /* debug symbol */
     case DBG_LINE: fprintf(debFile, "line: %s @ 0x%08X\n", s->name, s->value+segStart[s->type]);
                    break;
-    case DBG_FUNC: fprintf(debFile, "function: %s @ 0x%08X\n", s->name, s->value+segStart[s->type]);
+    case DBG_FUNC: tmp = strdup(s->name);
+                   refname = strtok(tmp, " ");
+                   refsym = lookupEnter(&symbolTable, refname, NULL, 0);    
+                   fprintf(debFile, "function: %s @ 0x%08X\n", refsym->name, refsym->value+segStart[refsym->type]);
                    break;
     case DBG_VARGLO: fprintf(debFile, "global: %s @ 0x%08X\n", s->name, s->value+segStart[s->type]);
                      break;
@@ -852,7 +961,7 @@ void printToDebFile(void) {
 }
 
 void updatesymbol(Symbol *s) {
-  s->rvcdelta=2*getmaxpos(s->value);
+  s->rvcdelta=2*getmaxpos2(s->value);
 }
 
 void updatesymbols(void) {
@@ -881,16 +990,18 @@ void writeHeader(void) {
 
 void writeCode(void) {
   int data;
-  int pos=0;
+  unsigned int pos=0;
   rewind(codeFile);
+
   while (1) {
     data = fgetc(codeFile);
     if (data == EOF) {
       break;
     }
-    if(getpos(pos)==-1)
-     fputc(data, outFile);
-    else {
+
+    if(!Set_member(rvcset, &pos))		
+     fputc(data, outFile);	 
+    else { 
      data = fgetc(codeFile);
      pos++;
     }
@@ -902,7 +1013,7 @@ void writeCode(void) {
 void writeData(void) {
   int i, data = 0;
   rewind(dataFile);
-  for(i=0;i<(2*getmaxpos(segStart[SEGMENT_DATA])&(SEGALIGN-1));i++) fputc(data, outFile);;
+  for(i=0;i<(2*getmaxpos2(segStart[SEGMENT_DATA])&(SEGALIGN-1));i++) fputc(data, outFile);;
   while (1) {
     data = fgetc(dataFile);
     if (data == EOF) {
@@ -962,6 +1073,92 @@ int readNumber(char *str, unsigned int *np) {
   }
 }
 
+int readlibsymbols(char * libname) {
+  unsigned int arMagic; 
+  FILE *libfile;
+  int numSymbols;
+  int i;
+  long pos;
+  
+  unsigned int n = 40;
+  char symname[40], filename[40];
+  char* symnameptr = &symname[0];
+  char* filenameptr = &filename[0];
+
+  libfile = fopen(libname, "r");
+  if (libfile == NULL) {
+    printf("error: cannot opening library file\n");
+    exit(1);
+  }
+  if (fread(&arMagic, sizeof(arMagic), 1, libfile) != 1 ||
+      arMagic != AR_MAGIC) {
+    printf("ar: not in archive format\n");
+    fclose(libfile);
+    return 1;
+  } 
+  if (fread(&arhdr, sizeof(arhdr), 1, libfile) != 1) {
+    return 1;
+  } 
+  if (fread(&numSymbols, sizeof(int), 1, libfile) != 1) {
+    printf("cannot read symdef file\n");
+    exit(1);
+  }
+  pos = sizeof(arMagic)+ sizeof(arhdr) + sizeof(int) + numSymbols * sizeof(Entry);
+  fseek(libfile, pos, SEEK_SET);
+  for (i = 0; i < numSymbols; i++) {  
+   getdelim(&symnameptr, &n, ':', libfile);
+   symnameptr[strlen(symnameptr)-1] = '\0';
+   getdelim(&filenameptr, &n, '\0', libfile);   
+   lookupEnter(&libsymbolTable, symnameptr, filenameptr, 0);
+  }
+  fclose(libfile);
+ return(0); 
+}
+
+int extractfilefromlib(char *libname, char *filename) {
+  unsigned int arMagic; 
+  FILE *in, *out;
+  int i;
+  int pad;    
+  #define BUFSIZE	32000
+  unsigned char buf[BUFSIZE];
+ 
+  in = fopen(libname, "r");
+  if (in == NULL) {
+    printf("error: cannot open library file\n");
+    exit(1);
+  }
+  if (fread(&arMagic, sizeof(arMagic), 1, in) != 1 ||
+      arMagic != AR_MAGIC) {
+    printf("ar: not in archive format\n");
+    fclose(in);
+    exit(1);
+   } 
+  arhdr.size = 0;
+  i = 0;
+  do {
+	pad = -arhdr.size & 0x03;
+    arhdr.size += pad; 
+	fseek(in, arhdr.size, SEEK_CUR); 
+	if (fread(&arhdr, sizeof(arhdr), 1, in) != 1) 
+		return(1);	
+	i++;
+  } while (strcmp(filename, arhdr.name)!=0); 
+  if (fread(buf, arhdr.size, 1, in) != 1) {
+    printf("read error\n");
+    exit(1);
+  }
+  strcpy(destfile, outpath);
+  strcat(destfile, filename);
+  out = fopen(destfile, "w");
+  if (fwrite(buf, arhdr.size, 1, out) != 1) {
+    printf("write error\n");
+    exit(1);
+  }
+  fclose(out);
+  fclose(in);  
+  return(0);
+} 
 
 void usage(char *myself) {
   fprintf(stderr, "Usage: %s\n", myself);
@@ -982,11 +1179,17 @@ int main(int argc, char *argv[]) {
   char *argp;
   char* dot;
   unsigned int *ssp;
-  int *ssdp;
-
+  int *ssdp;  
+  Symbol *Sym;
+  char *tmp;  
+  undefset = Set_new(0, NULL, NULL); 
+  defset = Set_new(0, NULL, NULL);
+  //rvcset =  Set_new(0, cmpint2, inthash); 
+  rvcset =  Set_new(0, intcmp, inthash); 
   tmpnam(codeName);
   tmpnam(dataName);
   outName = "a.out";
+  struct stat buf;
 
   for (i = 1; i < argc; i++) {
     argp = argv[i];
@@ -1006,6 +1209,12 @@ int main(int argc, char *argv[]) {
           usage(argv[0]);
         }
         outName = argv[++i];
+        break;
+	  case 'l':
+        if (i == argc - 1) {
+          usage(argv[0]);
+        }
+        libName = argv[++i];
         break;
       case 'm':
         if (i == argc - 1) {
@@ -1062,6 +1271,9 @@ int main(int argc, char *argv[]) {
   if (outFile == NULL) {
     error("cannot open output file '%s'", outName);
   }
+  tmp = dirname(outName);
+  strcpy(outpath, tmp);
+  strcat(outpath,"/");  
   if(withDebug) {
     strcpy(debName,outName);
     dot = strrchr(debName, '.');
@@ -1085,7 +1297,7 @@ int main(int argc, char *argv[]) {
     inFile = fopen(inName, "rb");
     if (inFile == NULL) {
       error("cannot open input file '%s'", inName);
-    }
+    }	
     fprintf(stderr, "Reading module '%s'...\n", inName);
     readModule();
     if (inFile != NULL) {
@@ -1093,6 +1305,44 @@ int main(int argc, char *argv[]) {
       inFile = NULL;
     }
   } while (++i < argc);
+
+  void **lines = Set_toArray(defset, NULL);
+  
+  for (i = 0; lines[i]; i++)   
+	  Set_remove(undefset, Atom_string(lines[i])); 	   
+  free(lines);  
+  lines = Set_toArray(undefset, NULL); 
+  
+  if(libName) {
+      readlibsymbols(libName);      
+      printf("Resolving:\r\n");      
+	  for (i = 0; lines[i]; i++) {	  
+		  Sym = lookup(libsymbolTable, lines[i]);
+          if(Sym) {            
+            strcpy(destfile, outpath);
+            strcat(destfile, Sym->filename);            
+          }
+          if(Sym && stat(destfile, &buf)!=0) {
+			  printf("Extracting %s for %s from archive %s\r\n", Sym->filename, Sym->name, libName);			  
+			  Set_remove(undefset, Atom_string(Sym->name));
+			  extractfilefromlib(libName, Sym->filename);              
+			  inFile = fopen(destfile, "rb");
+			  if (inFile == NULL) {
+				error("Cannot open input file '%s'", destfile);
+			  }	
+              fprintf(stderr, "Reading module '%s'...\n", Sym->filename);
+              readModule();
+			  if (inFile != NULL) {
+				fclose(inFile);                
+				inFile = NULL;
+              }			 
+			 FREE(lines);
+			 lines = Set_toArray(undefset, NULL);			 
+			 i = -1;
+          }
+      }	  
+	  FREE(lines);
+  }
   fprintf(stderr, "Linking modules...\n");
   linkSymbols();
   fprintf(stderr, "Relocating segments...\n");
