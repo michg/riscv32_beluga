@@ -18,13 +18,14 @@
 
 #include "set.h"
 #include "atom.h"
+#include "list.h"
 #include "mem.h"
 
 
 /**************************************************************/
 
-
-#define MAX_STRLEN	400
+#define roundup(x,n) (((x)+((n)-1))&(~((n)-1))) 
+#define MAX_STRLEN	600
 
 #define PAGE_SHIFT	12
 #define PAGE_SIZE	(1 << PAGE_SHIFT)
@@ -33,6 +34,7 @@
 
 #define MSB	((unsigned int) 1 << (sizeof(unsigned int) * 8 - 1))
 #define SEGALIGN 4
+#define FUNCALIGN 16
 
 #define DBG_LINE 1
 #define DBG_FUNC 2
@@ -276,6 +278,7 @@ Lelem *dlist = NULL;
 Set_T undefset;
 Set_T defset;
 Set_T rvcset;
+List_T liblist;
 void **rvcarray;
 
 
@@ -386,8 +389,8 @@ void fixupRef(Reloc *rel, int scan) {
     else deltaofs = 0;
     if(rel->base.segment==SEGMENT_CODE)
       deltadst = 2*getmaxpos2(rel->value);
-    else
-      deltadst=2*getmaxpos2(segStart[SEGMENT_DATA])&~(SEGALIGN-1);
+    else if (!segStartDefined[SEGMENT_DATA]) deltadst=2*getmaxpos2(segStart[SEGMENT_DATA])&~(SEGALIGN-1);
+    else deltadst = 0;
     rvcdelta = deltadst-deltaofs;
    }
 
@@ -571,18 +574,14 @@ void relocateSegments(void) {
 
   /* determine start of segments */
   if (!segStartDefined[SEGMENT_CODE]) {
-    segStart[SEGMENT_CODE] = 0;
-    segStartDefined[SEGMENT_CODE] = 1;
+    segStart[SEGMENT_CODE] = 0;    
   }
   if (!segStartDefined[SEGMENT_DATA]) {
-    segStart[SEGMENT_DATA] = segStart[SEGMENT_CODE]+segPtr[SEGMENT_CODE]; //+
-                            // PAGE_ROUND(segPtr[SEGMENT_CODE]);
-    segStartDefined[SEGMENT_DATA] = 1;
+    segStart[SEGMENT_DATA] = segStart[SEGMENT_CODE]+segPtr[SEGMENT_CODE]; //
   }
   if (!segStartDefined[SEGMENT_BSS]) {
     segStart[SEGMENT_BSS] = segStart[SEGMENT_DATA] +
                             segPtr[SEGMENT_DATA];
-    segStartDefined[SEGMENT_BSS] = 1;
   }
   /* fixup all references (which now are only relative to segments) */
   rel = relocs;
@@ -590,13 +589,8 @@ void relocateSegments(void) {
     fixupRef(rel, 1);
     rel = rel->next;
   }
-  //rvclist = List_reverse(rvclist);
-  //rvcarray = List_toArray(rvclist, NULL);  
     rvcarray = Set_toArray(rvcset, NULL);
-  //printf("Len:%d\n",Set_length(rvcset));
-   //for(i=0;i<Set_length(rvcset);i++) printf("BS: %d\r\n", *(unsigned int*)rvcarray[i]);
-    qsort(rvcarray, Set_length(rvcset), sizeof (*rvcarray),  cmpint2); 
-   //for(i=0;i<Set_length(rvcset);i++) printf("AS: %d\r\n", *(unsigned int*)rvcarray[i]);
+    qsort(rvcarray, Set_length(rvcset), sizeof (*rvcarray),  cmpint2);    
   
   updatesymbols();
   while (relocs != NULL) {
@@ -888,7 +882,7 @@ void readModule(void) {
 
 
 void printSymbol(Symbol *s) {
-  fprintf(mapFile, "%-32s", s->name);
+  fprintf(mapFile, "%-64s", s->name);
   if (s->type & MSB) {
     /* symbol is undefined */
     fprintf(mapFile, "%-15s", "UNDEFINED");
@@ -932,23 +926,18 @@ void printliststring(Lelem* x) {
     printf("%s\r\n",(char *) x->valptr);
 }
 
-void printdebSymbol(Symbol *s) {
-  Symbol *refsym;
-  char *refname, *tmp;  
+void printdebSymbol(Symbol *s) {  
   switch (s->debug) {
     /* debug symbol */
     case DBG_LINE: fprintf(debFile, "line: %s @ 0x%08X\n", s->name, s->value+segStart[s->type]);
-                   break;
-    case DBG_FUNC: tmp = strdup(s->name);
-                   refname = strtok(tmp, " ");
-                   refsym = lookupEnter(&symbolTable, refname, NULL, 0);    
-                   fprintf(debFile, "function: %s @ 0x%08X\n", refsym->name, refsym->value+segStart[refsym->type]);
+                   break;    
+    case DBG_FUNC:fprintf(debFile, "function: %s @ 0x%08X\n", s->name, roundup(s->value+segStart[s->type], FUNCALIGN));
                    break;
     case DBG_VARGLO: fprintf(debFile, "global: %s @ 0x%08X\n", s->name, s->value+segStart[s->type]);
                      break;
-    case DBG_VARLOCSTACK: fprintf(debFile, "%s", s->name);      //local or locparam
+    case DBG_VARLOCSTACK: fprintf(debFile, "%s\n", s->name);      //local or locparam
                           break;
-    case DBG_VARLOCREG: fprintf(debFile, "%s", s->name); // reglocal or regparam
+    case DBG_VARLOCREG: fprintf(debFile, "%s\n", s->name); // reglocal or regparam
                         break;
     case DBG_TYPEDEF: fprintf(debFile, "%s\n", s->name); // typedef
                       break;
@@ -1011,9 +1000,13 @@ void writeCode(void) {
 
 
 void writeData(void) {
-  int i, data = 0;
+  unsigned int i, data = 0;
   rewind(dataFile);
-  for(i=0;i<(2*getmaxpos2(segStart[SEGMENT_DATA])&(SEGALIGN-1));i++) fputc(data, outFile);;
+  if(segStartDefined[SEGMENT_DATA])
+    while(ftell(outFile)<segStart[SEGMENT_DATA]-segStart[SEGMENT_CODE]) fputc(data, outFile);  
+  else 
+    for(i=0;i<(2*getmaxpos2(segStart[SEGMENT_DATA])&(SEGALIGN-1));i++) fputc(data, outFile);
+  
   while (1) {
     data = fgetc(dataFile);
     if (data == EOF) {
@@ -1108,7 +1101,8 @@ int readlibsymbols(char * libname) {
   for (i = 0; i < numSymbols; i++) {  
    getdelim(&symnameptr, &n, ':', libfile);
    symnameptr[strlen(symnameptr)-1] = '\0';
-   getdelim(&filenameptr, &n, '\0', libfile);   
+   getdelim(&filenameptr, &n, ',', libfile);   
+   filenameptr[strlen(filenameptr)-1] = '\0';
    lookupEnter(&libsymbolTable, symnameptr, filenameptr, 0);
   }
   fclose(libfile);
@@ -1183,14 +1177,14 @@ int main(int argc, char *argv[]) {
   Symbol *Sym;
   char *tmp;  
   undefset = Set_new(0, NULL, NULL); 
-  defset = Set_new(0, NULL, NULL);
-  //rvcset =  Set_new(0, cmpint2, inthash); 
+  defset = Set_new(0, NULL, NULL);  
   rvcset =  Set_new(0, intcmp, inthash); 
   tmpnam(codeName);
   tmpnam(dataName);
-  outName = "a.out";
+  char *outName = "a.out";
   struct stat buf;
-
+  
+  
   for (i = 1; i < argc; i++) {
     argp = argv[i];
     if (*argp != '-') {
@@ -1208,13 +1202,14 @@ int main(int argc, char *argv[]) {
         if (i == argc - 1) {
           usage(argv[0]);
         }
-        outName = argv[++i];
+        outName = argv[++i];        
         break;
 	  case 'l':
         if (i == argc - 1) {
           usage(argv[0]);
         }
-        libName = argv[++i];
+        libName = strdup(argv[++i]);        
+        liblist = List_push(liblist,libName);        
         break;
       case 'm':
         if (i == argc - 1) {
@@ -1270,14 +1265,14 @@ int main(int argc, char *argv[]) {
   outFile = fopen(outName, "wb");
   if (outFile == NULL) {
     error("cannot open output file '%s'", outName);
-  }
-  tmp = dirname(outName);
+  }  
+  tmp = dirname(strdup(outName));  
   strcpy(outpath, tmp);
-  strcat(outpath,"/");  
+  strcat(outpath,"/");    
   if(withDebug) {
-    strcpy(debName,outName);
-    dot = strrchr(debName, '.');
-    strcpy(dot, ".deb");
+    strcpy(debName,outName);    
+    dot = strrchr(debName, '.');    
+    strcpy(dot, ".deb");    
     debFile = fopen(debName, "wt");
     if (debFile == NULL) {
       error("cannot open debug file '%s'", debName);
@@ -1306,14 +1301,17 @@ int main(int argc, char *argv[]) {
     }
   } while (++i < argc);
 
-  void **lines = Set_toArray(defset, NULL);
   
-  for (i = 0; lines[i]; i++)   
-	  Set_remove(undefset, Atom_string(lines[i])); 	   
-  free(lines);  
-  lines = Set_toArray(undefset, NULL); 
-  
-  if(libName) {
+   
+  liblist = List_push(liblist, NULL);
+  liblist = List_reverse(liblist);
+  liblist = List_pop(liblist, (void **)&libName);  
+  while(libName) {
+      printf("Using Library:%s\r\n",libName);
+      void **lines = Set_toArray(defset, NULL);
+      for (i = 0; lines[i]; i++) Set_remove(undefset, Atom_string(lines[i])); 	   
+      free(lines);  
+      lines = Set_toArray(undefset, NULL);
       readlibsymbols(libName);      
       printf("Resolving:\r\n");      
 	  for (i = 0; lines[i]; i++) {	  
@@ -1342,6 +1340,7 @@ int main(int argc, char *argv[]) {
           }
       }	  
 	  FREE(lines);
+  liblist = List_pop(liblist, (void **)&libName);
   }
   fprintf(stderr, "Linking modules...\n");
   linkSymbols();
